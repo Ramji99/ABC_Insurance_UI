@@ -1,0 +1,445 @@
+/* ==========================================================================
+   ABC HCP — Process Sheet document styles
+   Extracted from shared/process-sheet-template.js (a JS-string version of
+   this same standalone document) into a real .html + .css pair, per request.
+   This document is opened in an iframe (docViewerFrame.srcdoc) and can also
+   be opened directly in a new tab, so process-sheet.html links variables.css
+   itself rather than depending on the host page having loaded it first.
+
+   Color tokens below now resolve to the shared variables.css palette
+   (previously this file had its own close-but-not-identical :root copies,
+   e.g. --brand-red was #E11D2E here vs #e31f26 in variables.css — colors are
+   now unified, so a few shift very slightly to match the rest of the app).
+   Layout/sizing tokens with no shared equivalent (--sidebar-width) remain
+   local, since mapping them to an unrelated shared token would visibly
+   resize the document.
+   ========================================================================== */
+
+/* --brand-red, --brand-red-dark, --brand-blue, --brand-blue-dark,
+   --accent-indigo, --success, --success-bg, --warn, --warn-bg,
+   --badge-blue-bg, --badge-blue-text, --radius-md, --radius-lg and
+   --shadow-card are used directly via var(--token) below and now resolve to
+   variables.css (linked by process-sheet.html) — no local redeclaration
+   needed, since this file's names match those tokens exactly. Only names
+   with no shared equivalent, or that alias a shared token under a different
+   local name, are declared here. */
+:root {
+    --primary-color: var(--brand-blue);
+    --secondary-color: var(--page-bg);
+    --border-color: var(--line);
+    --text-color: var(--ink);
+    --text-soft: var(--muted);
+    --muted: var(--muted-soft);
+    --link-color: var(--brand-blue);
+    --sidebar-width: 270px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--text-color);
+    background: var(--secondary-color);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+.mono { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+
+/* ABC Brand Header */
+.brand-header {
+    display: flex; align-items: center; gap: 10px;
+    background: #fff; border-bottom: 1px solid var(--border-color);
+    padding: 0 22px; height: 58px; flex-shrink: 0;
+}
+.brand-mark {
+    width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--brand-red) 0%, var(--brand-red-dark) 100%);
+    display: flex; align-items: center; justify-content: center;
+}
+.brand-mark svg { width: 17px; height: 17px; }
+.brand-text b { color: var(--brand-red); font-size: 14px; font-weight: 800; display: block; line-height: 1.1; }
+.brand-text span { color: var(--brand-blue); font-size: 9.5px; font-weight: 700; letter-spacing: 1.1px; display: block; margin-top: 1px; }
+.brand-header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.print-btn {
+    display: flex; align-items: center; gap: 7px; background: var(--brand-blue); color: #fff;
+    border: none; border-radius: 9px; padding: 8px 14px; font-size: 12.5px; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+}
+.print-btn:hover { background: var(--brand-blue-dark); }
+.print-btn svg { width: 14px; height: 14px; }
+
+/* Top Menu Bar */
+.menu-bar {
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    padding: 9px 20px;
+    display: flex;
+    gap: 22px;
+    font-size: 13px;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.menu-item {
+    cursor: pointer;
+    color: var(--text-soft);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.menu-item:hover {
+    color: var(--brand-blue);
+}
+
+/* Main Layout Workspace */
+.workspace {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Sidebar Navigation */
+.sidebar {
+    width: var(--sidebar-width);
+    background-color: #ffffff;
+    border-right: 1px solid var(--border-color);
+    overflow-y: auto;
+    padding: 18px 0;
+    flex-shrink: 0;
+}
+
+.sidebar-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    padding: 0 20px 10px 20px;
+    margin-bottom: 8px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 12px 3px;
+    padding: 9px 12px;
+    color: var(--text-soft);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    border-left: 3px solid transparent;
+    border-radius: 9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nav-item:hover {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.nav-item.active {
+    background-color: #FDEEEE;
+    color: var(--brand-red);
+    border-left-color: var(--brand-red);
+    font-weight: 700;
+}
+
+/* Dashboard Content Area */
+.content-area {
+    flex: 1;
+    padding: 22px 28px 60px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+.dashboard-header {
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--brand-red);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.dashboard-header h1 {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-color);
+}
+.dashboard-header .ds-sub { font-size: 12.5px; color: var(--muted); font-weight: 600; margin-top: 3px; }
+
+/* Dashboard Sections */
+.section-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    margin-bottom: 18px;
+    box-shadow: var(--shadow-card);
+    scroll-margin-top: 20px;
+    overflow: hidden;
+}
+
+/* .section-title is wrapped in <h2 class="section-title-h2"> for proper
+   heading hierarchy (WAI-ARIA accordion pattern) — reset the browser's
+   default h2 margin/font so it doesn't affect the existing look. */
+.section-title-h2 {
+    margin: 0;
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+.section-title {
+    background-color: var(--secondary-color);
+    padding: 13px 20px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-color);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+}
+
+.section-title:hover {
+    background-color: #EEF0F5;
+}
+
+.toggle-icon {
+    display: inline-block;
+    font-size: 11px;
+    color: var(--muted);
+    transition: transform 0.2s ease;
+    margin-left: 10px;
+}
+
+.section-card.collapsed .toggle-icon {
+    transform: rotate(-90deg);
+}
+
+.section-card.collapsed .section-title {
+    border-bottom: none;
+}
+
+.accordion-body {
+    overflow: hidden;
+    max-height: 3000px;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.section-card.collapsed .accordion-body {
+    max-height: 0;
+}
+
+/* Remarks Trail */
+.remarks-trail {
+    padding: 18px 22px;
+    position: relative;
+}
+
+.remarks-trail::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 33px;
+    width: 2px;
+    background-color: var(--border-color);
+}
+
+.remark-entry {
+    position: relative;
+    padding-left: 38px;
+    margin-bottom: 18px;
+}
+
+.remark-entry:last-child {
+    margin-bottom: 0;
+}
+
+.remark-entry::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--accent-indigo);
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px var(--border-color);
+    z-index: 1;
+}
+
+.remark-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.remark-role {
+    font-weight: 700;
+    color: var(--badge-blue-text);
+    background-color: var(--badge-blue-bg);
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11.5px;
+}
+
+.remark-user {
+    color: var(--text-color);
+    font-weight: 700;
+}
+
+.remark-time {
+    color: var(--muted);
+    margin-left: auto;
+}
+
+.remark-text {
+    width: 100%;
+    min-height: 46px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text-color);
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 9px;
+    background-color: var(--secondary-color);
+}
+
+.remark-text:focus {
+    outline: none;
+    border-color: var(--accent-indigo);
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(76,95,209,0.14);
+}
+
+/* Three Column Grid Layout */
+.data-grid-3col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px 24px;
+    padding: 20px;
+}
+
+.data-field {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.field-label {
+    font-weight: 700;
+    color: var(--text-soft);
+    margin-right: 5px;
+}
+
+.field-value {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.value-blank {
+    color: var(--muted);
+    font-style: italic;
+    font-weight: 500;
+}
+
+/* Data Tables (Grid Views) */
+.table-responsive {
+    padding: 18px 20px;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    text-align: left;
+}
+
+th {
+    background-color: var(--secondary-color);
+    /* --text-soft (--muted app-wide) used here instead of the local --muted
+       alias (--muted-soft, 4.38:1) — small 11px uppercase text needs the
+       full 4.5:1 AA minimum, which --text-soft clears. */
+    color: var(--text-soft);
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-soft);
+    vertical-align: top;
+}
+
+tr:hover td {
+    background-color: var(--secondary-color);
+}
+
+/* Interactive Links & Actions */
+a {
+    color: var(--link-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.action-link-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.btn-action {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-soft);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn-action:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--accent-indigo);
+    color: var(--accent-indigo);
+    text-decoration: none;
+}
+
+.medico-opinion-block {
+    grid-column: span 2;
+    background-color: var(--warn-bg);
+    border-left: 3px solid var(--warn);
+    padding: 12px 16px;
+    border-radius: 9px;
+}

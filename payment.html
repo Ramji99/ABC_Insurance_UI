@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment | ABC Health Claims Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <!-- =====================================================================
+       AGENTS.md (v1.0.0) · AGENTS.md (v1.1.0) compliance:
+       - Design tokens in variables.css (must load first)
+       - Shared component & utility styles in styles.css
+       - Page-specific styles in payment.css (loaded last, after styles.css)
+       - JS behaviour in payment.js
+       - No inline CSS (style="") in this document
+       - No inline JavaScript (onclick, onchange, etc.) in this document
+       ===================================================================== -->
+  <!-- Design tokens — must load before styles.css -->
+  <link rel="stylesheet" href="variables.css">
+  <!-- Shared component & utility styles -->
+  <link rel="stylesheet" href="styles.css">
+  <!-- Payment page-specific styles -->
+  <link rel="stylesheet" href="payment.css">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+</head>
+
+<body>
+
+  <!-- ===================== TOASTS ===================== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ===================== HEADER ===================== -->
+  <div class="topbar" role="banner">
+    <div class="brand">
+      <div class="hamburger-wrap" id="hamburgerWrap">
+        <button class="hamburger-btn" id="hamburgerBtn" type="button" aria-label="Open navigation menu"
+          aria-haspopup="true" aria-expanded="false" aria-controls="navDropdownMenu" class="hamburger-mr">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <line x1="4" y1="7" x2="20" y2="7" />
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <line x1="4" y1="17" x2="20" y2="17" />
+          </svg>
+        </button>
+
+        <div class="nav-dropdown-menu hidden" id="navDropdownMenu">
+          <div class="nav-dropdown-head">Navigate</div>
+          <div class="nav-dropdown-body">
+            <div class="nav-dropdown-section-label">Modules</div>
+            <a href="./index.html" class="nav-dropdown-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg>
+              Scan Tag
+            </a>
+            <a href="./email-pool-dashboard-modern3.html" class="nav-dropdown-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              Email Pool
+            </a>
+            <a href="./email-team-dashboard.html" class="nav-dropdown-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+              Email Team Dashboard
+            </a>
+            <a href="./reports.html" class="nav-dropdown-link disabled" aria-disabled="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10" />
+                <line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" />
+              </svg>
+              Reports
+            </a>
+
+            <div class="nav-dropdown-divider"></div>
+            <div class="nav-dropdown-section-label">Quick Actions</div>
+            <a href="./index.html" class="nav-dropdown-link" id="navDropdownListView">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="8" y1="6" x2="21" y2="6" />
+                <line x1="8" y1="12" x2="21" y2="12" />
+                <line x1="8" y1="18" x2="21" y2="18" />
+                <line x1="3" y1="6" x2="3.01" y2="6" />
+                <line x1="3" y1="12" x2="3.01" y2="12" />
+                <line x1="3" y1="18" x2="3.01" y2="18" />
+              </svg>
+              List View
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M4 4h16v6.5c0 6-4 9.5-8 11.5-4-2-8-5.5-8-11.5V4z" fill="#fff" fill-opacity=".92" />
+        </svg>
+      </div>
+      <div class="brand-text">
+        <b>ABC</b>
+        <span>HEALTH CLAIMS PORTAL</span>
+      </div>
+    </div>
+
+    <!-- ===== Global Search Bar ===== -->
+    <div class="global-search" role="search" aria-label="Global search across records">
+      <!-- ===== Custom Dropdown ===== -->
+      <div class="gs-dropdown" id="gsDropdown">
+        <div class="gs-dropdown__trigger" id="gsDropdownTrigger" role="button" tabindex="0" aria-haspopup="listbox"
+          aria-expanded="false" aria-label="Search category">
+          <span class="gs-dropdown__trigger-label" id="gsDropdownLabel">Claim Policy Num</span>
+          <svg class="gs-dropdown__trigger-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+        <div class="gs-dropdown__overlay" id="gsDropdownOverlay"></div>
+        <div class="gs-dropdown__menu" id="gsDropdownMenu" role="listbox">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+      <input class="global-search__input" type="text" id="globalSearchInput"
+        placeholder="Search any record across all modules..." aria-label="Search query" autocomplete="off">
+      <button class="global-search__clear" id="globalSearchClear" type="button" aria-label="Clear search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M15 9l-6 6M9 9l6 6" />
+        </svg>
+      </button>
+      <button class="gs-advanced-btn" id="gsAdvancedBtn" type="button" aria-label="Advanced search"
+        title="Advanced Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="4" y1="6" x2="20" y2="6" />
+          <line x1="7" y1="12" x2="17" y2="12" />
+          <line x1="10" y1="18" x2="14" y2="18" />
+        </svg>
+        <span>Advanced</span>
+      </button>
+      <button class="global-search__submit" id="globalSearchSubmit" type="button" aria-label="Execute search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.3-4.3" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- ===== Advanced Search Modal ===== -->
+    <div class="gs-advanced-overlay" id="gsAdvancedOverlay">
+      <div class="gs-advanced-modal" id="gsAdvancedModal" role="dialog" aria-label="Advanced Search">
+        <div class="gs-advanced-modal__header">
+          <span class="gs-advanced-modal__title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+              <line x1="4" y1="6" x2="20" y2="6" />
+              <line x1="7" y1="12" x2="17" y2="12" />
+            </svg>
+            Advanced Search
+          </span>
+          <button class="gs-advanced-modal__close" id="gsAdvancedClose" type="button" aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+              stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="gs-advanced-modal__body">
+          <!-- Row: Category Dropdown + Keyword -->
+          <div class="gs-advanced-row">
+            <div class="gs-advanced-field">
+              <label for="gsAdvCategory">Category</label>
+              <select id="gsAdvCategory">
+                <!-- populated by JS -->
+              </select>
+            </div>
+            <div class="gs-advanced-field">
+              <label for="gsAdvKeyword">Keyword</label>
+              <input type="text" id="gsAdvKeyword" placeholder="Enter search term…">
+            </div>
+          </div>
+
+          <!-- DOA/DOL Date Picker -->
+          <div class="gs-advanced-field">
+            <label>DOA / DOL <span class="req">*</span></label>
+            <input type="date" id="gsAdvDateRange">
+          </div>
+
+          <!-- Toggle: Insured Name / DOB -->
+          <div>
+            <label
+              class="nav-search-label">Search
+              by</label>
+            <div class="gs-advanced-toggle-group">
+              <button class="gs-advanced-toggle active" id="gsAdvToggleName" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="3.2" />
+                  <path d="M5 20c1-4 4-6 7-6s6 2 7 6" />
+                </svg>
+                Insured Name
+              </button>
+              <button class="gs-advanced-toggle" id="gsAdvToggleDob" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                Date of Birth
+              </button>
+            </div>
+          </div>
+
+          <!-- Conditional field -->
+          <div class="gs-advanced-field gs-advanced-conditional" id="gsAdvConditionalField">
+            <label id="gsAdvConditionalLabel" for="gsAdvConditionalInput">Insured Name</label>
+            <input type="text" id="gsAdvConditionalInput" placeholder="Enter insured name…">
+          </div>
+        </div>
+
+        <div class="gs-advanced-modal__footer">
+          <button class="btn btn-outline" id="gsAdvancedClearAll" type="button">Clear All</button>
+          <button class="btn btn-primary" id="gsAdvancedSearch" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+            </svg>
+            Search
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-wrap" id="profileWrap">
+      <button class="who profile-btn" id="profileBtn" type="button" aria-haspopup="true" aria-expanded="false">
+        <div class="avatar" id="profileAvatar">RS</div>
+        <div class="who-text">
+          <b id="profileUserName">Rahul Sharma</b>
+          <span id="profileRoleName">Payment</span>
+        </div>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+
+      <div class="role-dropdown hidden" id="roleDropdown">
+        <div class="role-dropdown-title">Select Role</div>
+        <div class="role-list" id="roleList"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ===================== SHELL ===================== -->
+  <div class="shell" id="appShell">
+
+    <!-- ---------------- SIDEBAR ---------------- -->
+    <div class="sidebar collapsed" id="sidebar" role="navigation" aria-label="Section navigation">
+      <div class="sidebar-top">
+        <span class="eyebrow">Navigation</span>
+        <button class="collapse-btn" id="collapseBtn" aria-label="Collapse sidebar">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4">
+            <path d="M15 6l-6 6 6 6" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- ===== Sidebar content: List View (Filters) ===== -->
+      <div id="sidebarListContent">
+        <div class="progress-eyebrow"><span class="eyebrow">Inward Desk</span></div>
+        <div class="sidebar-nav-note">
+          Use the <b>Filters</b> button above the list to search and filter entries.
+        </div>
+        <div class="sidebar-spacer"></div>
+        <div class="sidebar-bottom">
+          <span class="task-pill">Inward Desk</span>
+          <div class="cin-label">Total Entries</div>
+          <div class="cin-value mono" id="totalEntriesCount">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------------- MAIN ---------------- -->
+    <div class="main" role="main">
+
+      <!-- =========================================================== -->
+      <!-- VIEW: PAYMENT                                                -->
+      <!-- =========================================================== -->
+      <div id="viewPayment">
+        <div class="step-head">
+          <div>
+            <h1>Payment</h1>
+            <p>Manage pending payments and review reverse feed entries.</p>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="pay-tabs" id="payTabs" role="tablist" aria-label="Payment entry points">
+          <button type="button" class="pay-tab-btn pay-tab pay-tab--active" data-tab="bucket" role="tab"
+            aria-selected="true">Payment Bucket<span class="pay-tab-badge" id="payTabBadgeBucket"
+              aria-hidden="true">0</span></button>
+          <button type="button" class="pay-tab-btn pay-tab" data-tab="reverse" role="tab"
+            aria-selected="false">Payment Recovery<span class="pay-tab-badge" id="payTabBadgeReverse"
+              aria-hidden="true">0</span></button>
+        </div>
+
+        <!-- Tab: Payment Bucket -->
+        <div id="payTabBucket">
+          <div id="payBulkBar" class="infobox infobox--blue hidden">
+            <span id="payBulkCount" class="u-text-sm-blue">0 selected</span>
+            <button class="btn btn-primary btn-sm" id="payBulkActionBtn" type="button">Apply Action to Selected</button>
+            <button class="btn btn-outline btn-sm" id="payBulkClearBtn" type="button">Clear Selection</button>
+          </div>
+          <div class="list-toolbar">
+            <div class="search-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.3-4.3" />
+              </svg>
+              <input type="text" id="payBucketSearch" placeholder="Search by Claim ID, Policy Number...">
+            </div>
+          </div>
+
+          <div class="status-chip-group" id="payBucketStatusChipGroup" role="group" aria-label="Filter by status">
+          </div>
+          <div class="sr-only" id="payBucketStatusChipAnnouncer" role="status" aria-live="polite"></div>
+
+          <div class="table-card">
+            <div class="table-scroll">
+              <table class="u-min-w-900 grid-table--wrap-header">
+                <thead>
+                  <tr>
+                    <th class="u-w-36" scope="col"><input type="checkbox" id="payBucketSelectAll"
+                        class="u-chk-red" aria-label="Select all claims"></th>
+                    <th scope="col">Claim No.</th>
+                    <th scope="col">Policy Number</th>
+                    <th scope="col">HEGIC No</th>
+                    <th scope="col">Insured Name</th>
+                    <th scope="col">Claim Type</th>
+                    <th scope="col">Pay Type</th>
+                    <th scope="col">TDS Amount</th>
+                    <th scope="col">UTRN Number</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="payBucketBody"></tbody>
+              </table>
+            </div>
+            <div class="empty-state hidden" id="payBucketEmpty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <rect x="2" y="5" width="20" height="14" rx="2" />
+                <path d="M2 10h20" />
+              </svg>
+              <h3>No payment entries</h3>
+              <p>No claims pending payment processing.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Reverse Feed List -->
+        <div id="payTabReverse" class="hidden">
+          <div class="list-toolbar">
+            <div class="search-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.3-4.3" />
+              </svg>
+              <input type="text" id="payReverseSearch" placeholder="Search by Claim ID...">
+            </div>
+          </div>
+
+          <div class="status-chip-group" id="payReverseStatusChipGroup" role="group" aria-label="Filter by status">
+          </div>
+          <div class="sr-only" id="payReverseStatusChipAnnouncer" role="status" aria-live="polite"></div>
+
+          <div class="table-card">
+            <div class="table-scroll">
+              <table class="u-min-w-900 grid-table--wrap-header">
+                <thead>
+                  <tr>
+                    <th scope="col">Claim ID</th>
+                    <th scope="col">Patient Name</th>
+                    <th scope="col">UTR Number</th>
+                    <th scope="col">Payment Date</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Bank</th>
+                    <th scope="col">Reverse Reason</th>
+                    <th scope="col">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="payReverseBody"></tbody>
+              </table>
+            </div>
+            <div class="empty-state hidden" id="payReverseEmpty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <rect x="2" y="5" width="20" height="14" rx="2" />
+                <path d="M2 10h20" />
+              </svg>
+              <h3>No reverse feed entries</h3>
+              <p>No payment reversals on record.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reversal Detail Screen -->
+        <div id="viewReversalDetail" class="hidden">
+          <button class="back-arrow-btn" id="backToReversalBtn" type="button" aria-label="Back to Payment Recovery List">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5" /><path d="M12 19l-7-7 7-7" />
+            </svg>
+            Back
+          </button>
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="5" width="20" height="14" rx="2" />
+                  <path d="M2 10h20" />
+                </svg>
+                Recovery Details
+              </div>
+            </div>
+            <div class="field-grid">
+              <div class="field"><label for="rd-recoveryFrom">Recovery From</label>
+                <input type="text" id="rd-recoveryFrom" value="-" disabled>
+              </div>
+              <div class="field"><label for="rd-totalRecovery">Total Recovery Amount</label>
+                <input type="text" class="mono" id="rd-totalRecovery" value="-" disabled>
+              </div>
+              <div class="field"><label for="rd-bankName">Bank Name</label>
+                <input type="text" id="rd-bankName" value="-" disabled>
+              </div>
+              <div class="field"><label for="rd-branchName">Branch Name</label>
+                <input type="text" id="rd-branchName" value="-" disabled>
+              </div>
+              <div class="field"><label for="rd-accountNo">Account No</label>
+                <input type="text" class="mono" id="rd-accountNo" value="-" disabled>
+              </div>
+              <div class="field"><label for="rd-recoveryMode">Recovery Mode</label>
+                <input type="text" id="rd-recoveryMode" value="-" disabled>
+              </div>
+              <div class="field"><label for="rd-serialNo">Cheque/DD/ET Serial No</label>
+                <input type="text" class="mono" id="rd-serialNo" value="-" disabled>
+              </div>
+              <div class="field"><label for="rd-chequeDate">Cheque/DD/ET Date</label>
+                <input type="text" id="rd-chequeDate" value="-" disabled>
+              </div>
+              <div class="field"><label for="rd-ifsc">IFSC / MICR Code</label>
+                <input type="text" class="mono" id="rd-ifsc" value="-" disabled>
+              </div>
+              <div class="field"><label for="rd-paymentFrom">Payment Received From</label>
+                <input type="text" id="rd-paymentFrom" value="-" disabled>
+              </div>
+              <div class="field"><label for="rd-bankAddr1">Bank Address 1</label>
+                <input type="text" id="rd-bankAddr1" value="-" disabled>
+              </div>
+              <div class="field"><label for="rd-state">State</label>
+                <input type="text" id="rd-state" value="-" disabled>
+              </div>
+              <div class="field"><label for="rd-bankAddr2">Bank Address 2</label>
+                <input type="text" id="rd-bankAddr2" value="-" disabled>
+              </div>
+              <div class="field"><label for="rd-city">City</label>
+                <input type="text" id="rd-city" value="-" disabled>
+              </div>
+              <div class="field"><label for="rd-bankAddr3">Bank Address 3</label>
+                <input type="text" id="rd-bankAddr3" value="-" disabled>
+              </div>
+              <div class="field"><label for="rd-pinCode">Pin Code</label>
+                <input type="text" class="mono" id="rd-pinCode" value="-" disabled>
+              </div>
+              <div class="field span2"><label for="rd-remarks">Remarks</label>
+                <textarea id="rd-remarks" rows="2" class="textarea-full-sm" disabled>-</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Claim Search -->
+        <div class="card u-mt-16 hidden" id="rdClaimSearch" data-enter-search-scope="1">
+          <div class="card-head">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.3-4.3" />
+              </svg>
+              Claim Search
+            </div>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label for="rdClaimNoSearch">Claim No</label><input type="text" id="rdClaimNoSearch" value="RR-HS23-13857406">
+            </div>
+            <div class="field"><label for="rdChequeFrom">Cheque No From</label><input type="text" id="rdChequeFrom"></div>
+            <div class="field"><label for="rdChequeTo">Cheque No To</label><input type="text" id="rdChequeTo"></div>
+          </div>
+          <div class="u-flex-gap-10-mt-12">
+            <button class="btn btn-outline" id="rdBackBtn" type="button">&lt;&lt; Back</button>
+            <button class="btn btn-primary" id="rdSearchBtn" type="button" data-enter-search-btn="1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.3-4.3" />
+              </svg>
+              Search
+            </button>
+          </div>
+        </div>
+
+        <!-- Search Details -->
+        <div class="card u-mt-16 hidden" id="rdSearchResults">
+          <div class="card-head">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 12l2 2 4-4" />
+                <circle cx="12" cy="12" r="9" />
+              </svg>
+              Search Details
+            </div>
+            <button class="btn btn-primary btn-sm" type="button" id="rdAttachClaimBtn">Attach Claim</button>
+          </div>
+          <div class="u-text-sm-muted">Record From 1 To 1 &nbsp;&nbsp; <span
+              class="u-float-right">Total Record : 1</span></div>
+          <div class="table-scroll">
+            <table class="u-min-w-900 grid-table--wrap-header">
+              <thead>
+                <tr>
+                  <th class="u-w-32" scope="col"><input type="checkbox"
+                      class="u-chk-red"></th>
+                  <th scope="col">Claim No</th>
+                  <th scope="col">Policy No</th>
+                  <th scope="col">HEGIC No</th>
+                  <th scope="col">Insured Name</th>
+                  <th scope="col">Claim Type</th>
+                  <th scope="col">Payee Type</th>
+                  <th scope="col">Gross Amount</th>
+                  <th scope="col">Net Amount</th>
+                  <th scope="col">TDS Amount</th>
+                  <th scope="col">Cheque Number</th>
+                  <th scope="col">Cheque Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="checkbox" checked class="u-chk-red"></td>
+                  <td class="strong mono">RR-HS23-13857406</td>
+                  <td class="mono">2809205123388900</td>
+                  <td class="mono">CFUUUUU003004-02W</td>
+                  <td class="strong">MO MOQUADRI ARORA</td>
+                  <td>—</td>
+                  <td>CLAIM ENTRY</td>
+                  <td class="mono">45406</td>
+                  <td class="mono">45405</td>
+                  <td class="mono">0</td>
+                  <td class="mono">3002811315</td>
+                  <td>10/06/23</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recovery Payment Details -->
+        <div class="card u-mt-16 hidden" id="rdRecoveryPayment">
+          <div class="card-head">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="5" width="20" height="14" rx="2" />
+                <path d="M2 10h20" />
+              </svg>
+              Recovery Payment Details
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="u-min-w-1000 grid-table--wrap-header">
+              <thead>
+                <tr>
+                  <th scope="col">Claim No</th>
+                  <th scope="col">Cheque No</th>
+                  <th scope="col">Net Amt</th>
+                  <th scope="col">Bal Amt for Rec</th>
+                  <th scope="col">Excess Amt</th>
+                  <th scope="col">Recovery Amt</th>
+                  <th scope="col">TDS%</th>
+                  <th scope="col">TDS Amt</th>
+                  <th scope="col">Total Gross Amount</th>
+                  <th scope="col">Type of Recovery</th>
+                  <th scope="col">Remarks</th>
+                </tr>
+              </thead>
+              <tbody id="rdRecoveryPaymentBody">
+                <tr>
+                  <td class="strong mono" id="rdrClaimNo">RR-HS23-13857406</td>
+                  <td class="mono" id="rdrChequeNo">3002811315</td>
+                  <td class="mono" id="rdrNetAmt">45405</td>
+                  <td class="mono" id="rdrBalAmt">45405</td>
+                  <td><input type="number" id="rdExcessAmt" value="45405"
+                      class="u-w-90-input">
+                  </td>
+                  <td><input type="number" id="rdRecoveryAmt" value="10000"
+                      class="u-w-90-input">
+                  </td>
+                  <td><input type="number" id="rdTdsPct" value="0"
+                      class="u-w-60-input">
+                  </td>
+                  <td class="mono" id="rdTdsAmt">0</td>
+                  <td class="mono" id="rdTotalGross">10000</td>
+                  <td>
+                    <select id="rdRecoveryType" class="u-w-110-input">
+                      <option>Partial</option>
+                      <option>Full</option>
+                    </select>
+                  </td>
+                  <td><textarea id="rdRecoveryRemarks" placeholder="Remarks" rows="2"
+                      class="u-w-110-input"></textarea>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="action-bar action-bar--fixed u-mt-8 hidden" id="rdActionBar">
+          <div class="action-left">
+            <button class="btn btn-outline" id="rdCancelBtn" type="button">Cancel</button>
+          </div>
+          <div class="action-right">
+            <button class="btn btn-full-red" id="rdSubmitBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===================== PAYMENT ACTION MODAL ===================== -->
+  <div class="modal-backdrop" id="payActionModal">
+    <div class="modal u-w-400" role="dialog" aria-modal="true" aria-labelledby="payActionTitle">
+      <h2 class="u-text-center u-mb-4" id="payActionTitle">Payment Action</h2>
+      <p class="u-text-center-muted u-mb-18" id="payActionSub">Select an
+        action for this claim.</p>
+      <div class="assign-user-list u-flex-center-gap-8" id="payActionList">
+        <label class="assign-option" data-action="Process">
+          <input type="radio" name="payAction" value="Process">
+          <span class="assign-avatar btn-gradient-success">PR</span>
+          <span class="assign-name">Process</span>
+        </label>
+        <label class="assign-option" data-action="Hold">
+          <input type="radio" name="payAction" value="Hold">
+          <span class="assign-avatar btn-gradient-warn">HO</span>
+          <span class="assign-name">Hold</span>
+        </label>
+        <label class="assign-option" data-action="Unhold">
+          <input type="radio" name="payAction" value="Unhold">
+          <span class="assign-avatar btn-gradient-blue">UH</span>
+          <span class="assign-name">Unhold</span>
+        </label>
+        <label class="assign-option" data-action="Cancel">
+          <input type="radio" name="payAction" value="Cancel">
+          <span class="assign-avatar btn-gradient-danger">CA</span>
+          <span class="assign-name">Cancel</span>
+        </label>
+      </div>
+      <div class="modal-actions u-mt-20">
+        <button class="btn btn-outline" id="payActionCancelBtn" type="button">Cancel</button>
+        <button class="btn btn-full-blue" id="payActionConfirmBtn" type="button">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SUCCESS MODAL ===================== -->
+  <div class="modal-backdrop" id="successModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4">
+          <path d="M20 6L9 17l-5-5" />
+        </svg>
+      </div>
+      <h2 id="successTitle">Action Applied</h2>
+      <p id="successSub"></p>
+      <div class="inward-no" id="modalInwardNo"></div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="modalViewBtn" type="button">View in Payment List</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Classic scripts (not type="module"): this app is opened directly as a
+       file:// document rather than through a local server, and browsers
+       block ES module imports under file:// via CORS. Shared/*.js files are
+       loaded first so their declarations are already global by the time
+       payment.js runs. -->
+  <script src="shared/role-config.js"></script>
+  <script src="shared/shared-components.js"></script>
+  <script src="shared/searchable-select.js"></script>
+  <script src="payment.js"></script>
+</body>
+
+</html>

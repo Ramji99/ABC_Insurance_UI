@@ -1,0 +1,172 @@
+/* ==========================================================================
+   ABC HCP — Payment page-specific styles
+   Loaded after variables.css + styles.css on payment.html only. Contains
+   every CSS rule that, as of the 2026-08-13 audit, is consumed exclusively
+   by payment.html (Payment Bucket / Payment Recovery tables, tab bar, and
+   the reversal-detail flow's compact table-cell inputs). Everything else
+   payment.html depends on (cards, fields, badges, buttons, modals, the
+   generic .u-w-* / .u-min-w-* / .infobox / .btn-gradient-* families not listed
+   here, etc.) is documented shared/reusable component library and stays in
+   styles.css — see AGENTS.md § COMPONENT LIBRARY.
+   ========================================================================== */
+
+/* --- Payment tabs — rounded pill switcher, same component as index.html's
+   Scan Tag tabs (#scanTagTabs / .scan-tag-tab / .scan-tag-tab--active /
+   .scan-tag-tab-badge). Payment gets its own .pay-tab* class family rather
+   than reusing the scan-tag-prefixed names directly, but every property
+   value below is copied 1:1 from styles.css's .scan-tag-tab* rules so the
+   two modules render identically. --- */
+.pay-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--surface-alt);
+  border: 0.1rem solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 0.4rem;
+  margin: 1rem 0;
+}
+.pay-tab {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    background 0.14s ease,
+    color 0.14s ease,
+    box-shadow 0.14s ease;
+}
+.pay-tab:hover {
+  color: var(--ink);
+}
+.pay-tab:focus-visible {
+  outline: 0.2rem solid var(--accent-indigo);
+  outline-offset: 0.2rem;
+}
+.pay-tab--active {
+  background: var(--surface);
+  color: var(--brand-red);
+  box-shadow: var(--shadow-card);
+}
+@media (max-width: 680px) {
+  .pay-tabs {
+    width: 100%;
+  }
+  .pay-tab {
+    flex: 1;
+    text-align: center;
+    padding: 0.9rem 1rem;
+  }
+}
+
+/* Tab pending-count badge — same shape/tokens as .scan-tag-tab-badge. Shows
+   each tab's actionable-status count (Payment Bucket: "Pending" claims;
+   Payment Recovery: "Under Review" reversals). */
+.pay-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.1rem;
+  height: 2.1rem;
+  padding: 0 0.6rem;
+  margin-left: 0.8rem;
+  border-radius: 999px;
+  background: var(--badge-amber-bg);
+  color: var(--badge-amber-text);
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1;
+  vertical-align: middle;
+}
+.pay-tab--active .pay-tab-badge {
+  background: var(--badge-amber-text);
+  color: #fff;
+}
+
+/* Bulk-action bar accent — blue infobox variant, used by #payBulkBar */
+.infobox--blue {
+  background: var(--badge-blue-bg);
+  border: 0.1rem solid var(--accent-indigo);
+}
+
+/* Gradient button — payment action modal's "Unhold" avatar */
+.btn-gradient-blue {
+  background: linear-gradient(
+    135deg,
+    var(--accent-indigo),
+    var(--brand-blue-dark)
+  );
+  color: var(--surface);
+}
+
+/* Row-select checkbox sizing — Payment Bucket / Search Details tables */
+.u-chk-red {
+  width: 1.5rem;
+  height: 1.5rem;
+  accent-color: var(--brand-red);
+}
+
+/* "Total Record" count alignment — Search Details card */
+.u-float-right {
+  float: right;
+}
+
+/* Payment Action modal title spacing */
+.u-mb-4 {
+  margin-bottom: 0.4rem;
+}
+
+/* Wide-table min-widths — Payment Bucket / Payment Recovery / Search Details
+   / Recovery Payment Details tables */
+.u-min-w-900 {
+  min-width: 90rem;
+}
+.u-min-w-1000 {
+  min-width: 100rem;
+}
+
+/* Fixed-width table header cells — checkbox-select columns */
+.u-w-36 {
+  width: 3.6rem;
+}
+.u-w-32 {
+  width: 3.2rem;
+}
+
+/* Payment Action modal width */
+.u-w-400 {
+  width: 40rem;
+}
+
+/* Compact inline table inputs — Recovery Payment Details row (Excess Amt,
+   Recovery Amt, TDS%, Type of Recovery select, Remarks textarea) */
+.u-w-60-input {
+  width: 6rem;
+  border: 0.1rem solid var(--line);
+  border-radius: 0.8rem;
+  padding: 0.6rem 0.8rem;
+  font-size: 1.25rem;
+  font-family: inherit;
+}
+.u-w-90-input {
+  width: 9rem;
+  border: 0.1rem solid var(--line);
+  border-radius: 0.8rem;
+  padding: 0.6rem 0.8rem;
+  font-size: 1.25rem;
+  font-family: inherit;
+}
+.u-w-110-input {
+  width: 11rem;
+  border: 0.1rem solid var(--line);
+  border-radius: 0.8rem;
+  padding: 0.6rem 0.8rem;
+  font-size: 1.25rem;
+  font-family: inherit;
+}

@@ -1,0 +1,315 @@
+/* ==========================================================================
+   ABC Health Claims Portal — Design Tokens
+   File: variables.css
+   Standards: AGENTS.md (v1.0.0) · AGENTS.md (v1.1.0)
+
+   PURPOSE
+   -------
+   Single source of truth for ALL design tokens.
+   - No colour, radius, shadow, or layout value is defined anywhere else.
+   - styles.css imports this file and uses only var(--token-name).
+   - Grouped by category. Add tokens here; never hardcode values in styles.css.
+
+   SECTIONS
+   --------
+   1. Brand Palette         — primary brand colours (raw values)
+   2. Status Palette        — semantic colour scale (success, warn, danger)
+   3. Extended Palette      — blue, teal, violet scale (component-level use)
+   4. Ink / Text            — foreground colour scale
+   5. Surfaces              — background colour scale
+   6. Borders               — line / divider colour scale
+   7. Badge Tokens          — badge background + text pairs
+   8. Shadows               — elevation tokens
+   9. Radius                — border-radius scale
+   10. Layout               — sidebar dimensions
+   11. Policy Card (pc)     — scoped tokens for .policy-card component
+   ========================================================================== */
+
+:root {
+  /* -------------------------------------------------------------------------
+     1. BRAND PALETTE
+     Primary brand colours. Use for CTAs, logos, focus rings, accents.
+     --brand-red      : primary action / brand identity
+     --brand-red-dark : hover / pressed state for red CTAs
+     --brand-blue     : primary navigation / links
+     --brand-blue-dark: hover / pressed state for blue CTAs
+     --accent-indigo  : interactive highlight, focus rings, selected state
+     ------------------------------------------------------------------------- */
+  --brand-red: #e31f26;
+  --brand-red-dark: #b8121f;
+  --brand-blue: #1e40af;
+  --brand-blue-dark: #1e3a8a;
+  --accent-indigo: #2563eb;
+
+  /* -------------------------------------------------------------------------
+     2. STATUS PALETTE
+     Semantic colours for system states. Always pair bg + fg tokens.
+     Never use the -bg token for text; never use the base token for backgrounds.
+     ------------------------------------------------------------------------- */
+  --success: #15803d;
+  --success-dark: #166534;
+  --success-med: #23d160;
+  --success-bg: #dcfce7;
+
+  --warn: #b45309;
+  --warn-dark: #b45f04;
+  --warn-medium: #ffad04;
+  --warn-bg: #fffbed;
+
+  --danger: #b91c1c;
+  --danger-dark: #9b1515;
+  --danger-medium: #dc3545;
+  --danger-bg: #fee2e2;
+
+  /* -------------------------------------------------------------------------
+     3. EXTENDED PALETTE
+     Colour scale for components that need more tonal range.
+     Prefer status tokens above; use these only when a component needs
+     a mid-tone or soft variant not covered by the status scale.
+     ------------------------------------------------------------------------- */
+
+  /* Blue scale — matches brand-blue family */
+  --blue: #1e40af; /* = --brand-blue  */
+  --blue-dark: #1e3a8a; /* = --brand-blue-dark */
+  --blue-mid: #2563eb; /* = --accent-indigo */
+  --blue-soft: #dbeafe;
+  --blue-muted: #93c5fd;
+
+  /* Green scale — matches success family */
+  --green: #15803d; /* = --success */
+  --green-dark: #166534; /* = --success-dark */
+  --green-mid: #22c55e;
+  --green-soft: #dcfce7; /* = --success-bg */
+
+  /* Amber scale — matches warn family */
+  --amber: #b45309; /* = --warn */
+  --amber-dark: #b45f04; /* = --warn-dark */
+  --amber-mid: #f59e0b;
+  --amber-soft: #fff6d0; /* = --warn-bg */
+
+  /* Red scale — matches danger family */
+  --red: #b91c1c; /* = --danger */
+  --red-dark: #9b1515; /* = --danger-dark */
+  --red-mid: #ef4444;
+  --red-soft: #fee2e2; /* = --danger-bg */
+
+  /* --- NOTE: Scale tokens below are intentionally defined for design-system
+       completeness. They are not yet used in styles.css but must NOT be
+       removed — they provide the palette for future components.
+       Flag: add a reference comment if you use one so this note stays accurate. --- */
+
+  /* Teal scale */
+  --teal: #0e7c6a;
+  --teal-dark: #0a5e50;
+  --teal-soft: #ccfbf1;
+
+  /* Violet scale */
+  --violet: #6d28d9;
+  --violet-dark: #5b21b6;
+  --violet-soft: #ede9fe;
+
+  /* Grey scale */
+  --grey-bg: #eef2f7;
+  --grey-text: #556479; /* was #64748B (4.31:1 on page-bg, 4.23:1 on grey-bg, 3.86:1 on grey-border — all fail WCAG AA 4.5:1) — darkened to pass against every grey surface this token is actually used on (4.89:1 worst case, on grey-border) */
+  --grey-med: #6c757d;
+  --grey-border: #e2e8f0;
+  --grey-muted: #aeb4c6;
+
+  /* -------------------------------------------------------------------------
+     3b. WORKLOAD SERIES PALETTE
+     Five named, always-distinguishable accent colours for claim-type
+     breakdowns (e.g. TL Dashboard → Team Workload). Values intentionally
+     equal existing brand/extended tokens (kept in lockstep so the same
+     claim type always reads the same colour everywhere) but are named by
+     role, not by hue, so a component can restyle its series without
+     hunting down every --brand-blue/--teal/--violet reference.
+     ------------------------------------------------------------------------- */
+  --series-1: var(--brand-blue);
+  --series-1-soft: var(--blue-soft);
+  --series-2: var(--teal);
+  --series-2-soft: var(--teal-soft);
+  --series-3: var(--violet);
+  --series-3-soft: var(--violet-soft);
+  --series-4: var(--warn);
+  --series-4-soft: var(--amber-soft);
+  --series-5: var(--brand-red);
+  --series-5-soft: var(--red-soft);
+
+  /* -------------------------------------------------------------------------
+     4. INK / TEXT SCALE
+     Use for all foreground text and icon colours.
+     --ink       : primary body text
+     --ink-soft  : secondary / subheading text
+     --muted     : placeholder, helper, caption text
+     --muted-soft: disabled / de-emphasised text
+     ------------------------------------------------------------------------- */
+  --ink: #0f172a;
+  --ink-soft: #1e293b;
+  --muted: #414c5b;
+  --muted-soft: #6b7280; /* was #94A3B8 (2.56:1) — darkened to pass WCAG AA 4.5:1 (4.83:1 on white) */
+
+  /* -------------------------------------------------------------------------
+     5. SURFACE SCALE
+     Use for all background fill colours.
+     --surface      : white — card, modal, input backgrounds
+     --surface-tint : off-white — subtle elevation
+     --surface-alt  : light grey — alternate row, sidebar bg
+     --page-bg      : page / body background
+     ------------------------------------------------------------------------- */
+  --surface: #ffffff;
+  --surface-tint: #f8fafc;
+  --surface-alt: #eef2f7;
+  --page-bg: #f1f4f8;
+
+  /* -------------------------------------------------------------------------
+     6. BORDER / LINE SCALE
+     Use for all borders, dividers, and separators.
+     --line      : standard border
+     --line-soft : subtle divider / hairline
+     ------------------------------------------------------------------------- */
+  --line: #e2e8f0;
+  --line-soft: #f1f5f9;
+
+  /* -------------------------------------------------------------------------
+     6b. DISABLED / READ-ONLY FIELD TOKENS
+     Dedicated set for disabled inputs/selects/textareas — visually distinct
+     from --page-bg (not just opacity/greyed) and WCAG AA compliant.
+     --disabled-text uses --muted's value (7.1:1 on --disabled-bg) since text
+     needs 4.5:1; --disabled-border only needs 3:1, so it reuses
+     --muted-soft's value (3.9:1) to read as a border, not a heavy outline.
+     Neither reuses --muted-soft directly for text: at 4.5:1 on white it
+     fails once dropped onto any of the app's grey surfaces, which is why
+     disabled fields were unreadable before this token pair existed.
+     ------------------------------------------------------------------------- */
+  --disabled-bg: #ebeef1;
+  --disabled-border: #6b7280;
+  --disabled-text: #414c5b;
+
+  /* -------------------------------------------------------------------------
+     7. BADGE TOKENS
+     Paired bg + text tokens for each badge colour.
+     Always use both tokens together — bg for background, text for foreground.
+     ------------------------------------------------------------------------- */
+  --badge-blue-bg: #dbeafe;
+  --badge-blue-text: #1e40af;
+
+  --badge-amber-bg: #ffeeab;
+  --badge-amber-text: #803b06;
+
+  --badge-pink-bg: #ede9fe;
+  --badge-pink-text: #6d28d9;
+
+  --badge-green-bg: #dcfce7;
+  --badge-green-text: #15803d;
+
+  --badge-red-bg: #fee2e2;
+  --badge-red-text: #b91c1c;
+
+  --badge-teal-bg: #ccfbf1;
+  --badge-teal-text: #0e7c6a;
+
+  --badge-grey-bg: #eef2f7;
+  --badge-grey-text: #64748b;
+
+  /* -------------------------------------------------------------------------
+     8. SHADOWS
+     Elevation tokens. Use --shadow-card for standard cards.
+     Do not create custom box-shadow values outside this file.
+     ------------------------------------------------------------------------- */
+  --shadow-card:
+    0 0.1rem 0.3rem rgba(15, 23, 42, 0.06),
+    0 0.1rem 1.2rem rgba(15, 23, 42, 0.05);
+  --shadow-dropdown: 0 0.4rem 1.8rem rgba(0, 0, 0, 0.12);
+  --shadow-modal: 0 0.8rem 4rem rgba(15, 23, 42, 0.22);
+  --shadow-focus-red: 0 0 0 0.3rem rgba(227, 31, 38, 0.2);
+  --shadow-focus-blue: 0 0 0 0.3rem rgba(37, 99, 235, 0.2);
+  /* Focus ring shadow tokens — use for :focus-visible box-shadow only */
+  --shadow-focus-indigo: 0 0 0 0.3rem rgba(76, 95, 209, 0.18);
+  --shadow-focus-red: 0 0 0 0.3rem rgba(227, 31, 38, 0.12);
+
+  /* -------------------------------------------------------------------------
+     8b. TYPOGRAPHY SCALE
+     Font-size, line-height, letter-spacing, and font-weight tokens.
+     Based on Perfect Fourth (1.333) ratio. Base: 10px html → 1rem = 10px.
+     Provides a consistent type scale for all headings, body, and UI text.
+     Fluid sizes use clamp() for responsive scaling without breakpoint jumps.
+     ------------------------------------------------------------------------- */
+
+  /* --- Font Size Tokens (static, rem-based) --- */
+  --fs-display: 3.6rem;    /* Hero / splash headline */
+  --fs-h1: 2.4rem;         /* Page title */
+  --fs-h2: 1.8rem;         /* Section heading */
+  --fs-h3: 1.5rem;         /* Card title, subsection */
+  --fs-h4: 1.3rem;         /* Widget header, in-card group */
+  --fs-body-lg: 1.5rem;    /* Lead / intro text */
+  --fs-body: 1.4rem;       /* Default body copy */
+  --fs-small: 1.3rem;      /* Secondary info, table cells */
+  --fs-caption: 1.2rem;    /* Metadata, helper text, timestamps */
+  --fs-overline: 1.1rem;   /* ALL CAPS labels, taglines */
+  --fs-micro: 1.0rem;      /* Status badges, compact data */
+
+  /* --- Fluid Font Sizes (responsive via clamp) --- */
+  --fs-display-fluid: clamp(2.6rem, 3vw + 1.4rem, 3.6rem);
+  --fs-h1-fluid: clamp(2.0rem, 2vw + 1.2rem, 2.4rem);
+  --fs-h2-fluid: clamp(1.6rem, 1.2vw + 1rem, 1.8rem);
+
+  /* --- Line Height Tokens --- */
+  --lh-tight: 1.1;         /* Display / hero headings */
+  --lh-heading: 1.2;       /* H1–H3 */
+  --lh-subheading: 1.3;    /* H4, card titles */
+  --lh-body: 1.55;         /* Body copy */
+  --lh-relaxed: 1.6;       /* Small text / captions for legibility */
+
+  /* --- Letter Spacing Tokens --- */
+  --ls-tight: -0.02em;     /* Display / large headings — tighter for cohesion */
+  --ls-heading: -0.01em;   /* H1–H2 */
+  --ls-normal: 0em;        /* Body text (default browser tracking) */
+  --ls-wide: 0.04em;       /* Small ALL CAPS text, overline labels */
+  --ls-wider: 0.08em;      /* Overline / section taglines */
+
+  /* --- Font Weight Tokens --- */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-extrabold: 800;
+
+  /* -------------------------------------------------------------------------
+     9. RADIUS SCALE
+     Border-radius tokens for consistent rounding.
+     --radius-sm  : inputs, chips, small elements
+     --radius-md  : cards, modals, panels
+     --radius-lg  : large cards, sheets
+     ------------------------------------------------------------------------- */
+  --radius-sm: 0.6rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.4rem;
+
+  /* -------------------------------------------------------------------------
+     10. LAYOUT
+     Structural dimension tokens.
+     ------------------------------------------------------------------------- */
+  --sidebar-w: 25rem;
+  --sidebar-w-collapsed: 7.2rem;
+  --topbar-h: 5.6rem;
+  --main-pad: 2.4rem;
+
+  /* -------------------------------------------------------------------------
+     11. POLICY CARD (pc) — scoped component tokens
+     Used exclusively inside .policy-card and its children.
+     Prefixed --pc- to prevent collision with global tokens.
+     ------------------------------------------------------------------------- */
+  --pc-bg: var(--surface);
+  --pc-border: #e3e7ee;
+  --pc-divider: #e8ebf1;
+  --pc-label: #68748a; /* was #8992A3 (3.13:1) — darkened to pass WCAG AA 4.5:1 (4.72:1 on white) */
+  --pc-value: #16233f;
+  --pc-icon: #5b6478;
+  --pc-avatar-bg: #fdeceb;
+  --pc-avatar-text: #c1302b; /* was #E0473E (3.57:1) — darkened to pass WCAG AA 4.5:1 (4.93:1 on pc-avatar-bg) */
+  --pc-green-1: #1f6a4c;
+  --pc-green-2: #3f9b6f;
+  --pc-green-3: #eaf6ef;
+  --pc-btn-bg: #1f6a4c;
+  --pc-btn-text: var(--surface);
+}

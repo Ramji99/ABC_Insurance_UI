@@ -1,0 +1,1289 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Team Dashboard | ABC Health Claims Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <!-- =====================================================================
+       AGENTS.md compliance:
+       - Design tokens in variables.css (single shared source — must load first)
+       - Shared header/component styles in styles.css (same header as index.html)
+       - Email Team Dashboard page-specific styles in email-team-styles.css
+       - Behaviour in email-team-app.js (plus shared/searchable-select.js,
+         the one shared/ script this page loads — see AGENTS.md Iterations)
+       - No inline CSS (style="") in this document
+       - No inline JavaScript (onclick, onchange, etc.) in this document
+       ===================================================================== -->
+  <!-- Design tokens — shared, single source; must load before styles.css -->
+  <link rel="stylesheet" href="variables.css">
+  <!-- Shared header & component styles (same header as index.html) -->
+  <link rel="stylesheet" href="styles.css">
+  <!-- Email Team Dashboard page-specific styles -->
+  <link rel="stylesheet" href="email-team-styles.css">
+</head>
+
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- ===================== HEADER ===================== -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="hamburger-wrap" id="hamburgerWrap">
+        <button class="hamburger-btn" id="hamburgerBtn" type="button" aria-label="Open navigation menu"
+          aria-haspopup="true" aria-expanded="false" aria-controls="navDropdownMenu" class="hamburger-mr">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <line x1="4" y1="7" x2="20" y2="7" />
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <line x1="4" y1="17" x2="20" y2="17" />
+          </svg>
+        </button>
+
+        <div class="nav-dropdown-menu hidden" id="navDropdownMenu">
+          <div class="nav-dropdown-head">Navigate</div>
+          <div class="nav-dropdown-body">
+            <div class="nav-dropdown-section-label">Modules</div>
+            <a href="./index.html" class="nav-dropdown-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg>
+              Scan Tag
+            </a>
+            <a href="./email-pool-dashboard-modern3.html" class="nav-dropdown-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              Email Pool
+            </a>
+            <a href="./email-team-dashboard.html" class="nav-dropdown-link active" aria-current="page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+              Email Team Dashboard
+            </a>
+            <a href="./reports.html" class="nav-dropdown-link disabled" aria-disabled="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10" />
+                <line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" />
+              </svg>
+              Reports
+            </a>
+
+            <div class="nav-dropdown-divider"></div>
+            <div class="nav-dropdown-section-label">Quick Actions</div>
+            <a href="./index.html" class="nav-dropdown-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="8" y1="6" x2="21" y2="6" />
+                <line x1="8" y1="12" x2="21" y2="12" />
+                <line x1="8" y1="18" x2="21" y2="18" />
+                <line x1="3" y1="6" x2="3.01" y2="6" />
+                <line x1="3" y1="12" x2="3.01" y2="12" />
+                <line x1="3" y1="18" x2="3.01" y2="18" />
+              </svg>
+              List View
+            </a>
+            <a href="./index.html" class="nav-dropdown-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="16" />
+                <line x1="8" y1="12" x2="16" y2="12" />
+              </svg>
+              Create New Entry
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M4 4h16v6.5c0 6-4 9.5-8 11.5-4-2-8-5.5-8-11.5V4z" fill="#fff" fill-opacity=".92" />
+        </svg>
+      </div>
+      <div class="brand-text">
+        <b>ABC</b>
+        <span>HEALTH CLAIMS PORTAL</span>
+      </div>
+    </div>
+
+    <!-- ===== Global Search Bar ===== -->
+    <div class="global-search" role="search" aria-label="Global search across records">
+      <!-- ===== Custom Dropdown ===== -->
+      <div class="gs-dropdown" id="gsDropdown">
+        <div class="gs-dropdown__trigger" id="gsDropdownTrigger" role="button" tabindex="0" aria-haspopup="listbox"
+          aria-expanded="false" aria-label="Search category">
+          <span class="gs-dropdown__trigger-label" id="gsDropdownLabel">Claim Policy Num</span>
+          <svg class="gs-dropdown__trigger-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+        <div class="gs-dropdown__overlay" id="gsDropdownOverlay"></div>
+        <div class="gs-dropdown__menu" id="gsDropdownMenu" role="listbox">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+      <input class="global-search__input" type="text" id="globalSearchInput"
+        placeholder="Search any record across all modules..." aria-label="Search query" autocomplete="off">
+      <button class="global-search__clear" id="globalSearchClear" type="button" aria-label="Clear search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M15 9l-6 6M9 9l6 6" />
+        </svg>
+      </button>
+      <button class="gs-advanced-btn" id="gsAdvancedBtn" type="button" aria-label="Advanced search"
+        title="Advanced Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="4" y1="6" x2="20" y2="6" />
+          <line x1="7" y1="12" x2="17" y2="12" />
+          <line x1="10" y1="18" x2="14" y2="18" />
+        </svg>
+        <span>Advanced</span>
+      </button>
+      <button class="global-search__submit" id="globalSearchSubmit" type="button" aria-label="Execute search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.3-4.3" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- ===== Advanced Search Modal ===== -->
+    <div class="gs-advanced-overlay" id="gsAdvancedOverlay">
+      <div class="gs-advanced-modal" id="gsAdvancedModal" role="dialog" aria-label="Advanced Search">
+        <div class="gs-advanced-modal__header">
+          <span class="gs-advanced-modal__title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+              <line x1="4" y1="6" x2="20" y2="6" />
+              <line x1="7" y1="12" x2="17" y2="12" />
+            </svg>
+            Advanced Search
+          </span>
+          <button class="gs-advanced-modal__close" id="gsAdvancedClose" type="button" aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+              stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="gs-advanced-modal__body">
+          <!-- Row: Category Dropdown + Keyword -->
+          <div class="gs-advanced-row">
+            <div class="gs-advanced-field">
+              <label>Category</label>
+              <select id="gsAdvCategory">
+                <!-- populated by JS -->
+              </select>
+            </div>
+            <div class="gs-advanced-field">
+              <label>Keyword</label>
+              <input type="text" id="gsAdvKeyword" placeholder="Enter search term…">
+            </div>
+          </div>
+
+          <!-- DOA/DOL Date Picker -->
+          <div class="gs-advanced-field">
+            <label>DOA / DOL <span class="req">*</span></label>
+            <input type="date" id="gsAdvDateRange">
+          </div>
+
+          <!-- Toggle: Insured Name / DOB -->
+          <div>
+            <label
+              class="nav-search-label">Search
+              by</label>
+            <div class="gs-advanced-toggle-group">
+              <button class="gs-advanced-toggle active" id="gsAdvToggleName" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="3.2" />
+                  <path d="M5 20c1-4 4-6 7-6s6 2 7 6" />
+                </svg>
+                Insured Name
+              </button>
+              <button class="gs-advanced-toggle" id="gsAdvToggleDob" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                Date of Birth
+              </button>
+            </div>
+          </div>
+
+          <!-- Conditional field -->
+          <div class="gs-advanced-field gs-advanced-conditional" id="gsAdvConditionalField">
+            <label id="gsAdvConditionalLabel">Insured Name</label>
+            <input type="text" id="gsAdvConditionalInput" placeholder="Enter insured name…">
+          </div>
+        </div>
+
+        <div class="gs-advanced-modal__footer">
+          <button class="btn btn-outline" id="gsAdvancedClearAll" type="button">Clear All</button>
+          <button class="btn btn-primary" id="gsAdvancedSearch" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+            </svg>
+            Search
+          </button>
+        </div>
+      </div>
+    </div>
+
+<div class="profile-wrap" id="profileWrap">
+      <button class="who profile-btn" id="profileBtn" type="button">
+        <div class="avatar" id="profileAvatar">NR</div>
+        <div class="who-text">
+          <b id="profileUserName">Nagendra Rajawat</b>
+          <span id="profileRoleName">Non Medico TL</span>
+        </div>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+
+      <div class="role-dropdown hidden" id="roleDropdown">
+        <div class="role-dropdown-title">Select Role</div>
+        <div class="role-list" id="roleList"></div>
+      </div>
+    </div>
+  </div>
+
+    <nav class="topbar-tabs-row" aria-label="Primary navigation">
+      <div class="topbar-tabs-inner">
+        <a class="nav-tab" href="./ABC_Reimbursement_ver1.html">Claim Pool Dashboard</a>
+        <a class="nav-tab" href="./email-pool-dashboard-modern3.html">Email Pool Dashboard</a>
+        <a class="nav-tab active" href="#" aria-current="page">Email Team Dashboard</a>
+        <a class="nav-tab" href="#">Generic Search</a>
+        <a class="nav-tab" href="#">Team Dashboard</a>
+        <a class="nav-tab" href="#">Add/View Aggregate Deductible</a>
+      </div>
+    </nav>
+
+  <main id="main" class="page">
+    <!-- Page head -->
+    <div class="page-head">
+      <div>
+        <div class="eyebrow">Team overview</div>
+        <h1 class="page-title">Email Team Dashboard</h1>
+        <p class="page-sub">
+          Monitor assigned and pending workloads across all team members.
+        </p>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <section class="toolbar" aria-label="Search">
+      <div class="toolbar-row">
+        <div class="search-wrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2.2" />
+            <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+          </svg>
+          <label for="fSearch" class="sr-only">Search by username</label>
+          <input type="text" id="fSearch" placeholder="Search by username…" autocomplete="off" />
+        </div>
+        <button class="tool-btn" id="resetBtn" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M21 12a9 9 0 1 1-3-6.7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+            <path d="M21 3v6h-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+          Reset
+        </button>
+      </div>
+    </section>
+
+    <!-- List head -->
+    <div class="list-head">
+      <span class="list-count" id="resultCount">– members</span>
+      <!-- KPI tab bar -->
+      <section class="kpi-strip" aria-label="Team overview">
+        <div class="kpi-card kpi-total kpi-selected">
+          <div class="kpi-card-body">
+            <div class="kpi-value" id="kpiMembers">–</div>
+            <div class="kpi-label">Total</div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-active">
+          <div class="kpi-card-body">
+            <div class="kpi-value" id="kpiTotal">–</div>
+            <div class="kpi-label">Assigned</div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-overdue">
+          <div class="kpi-card-body">
+            <div class="kpi-value" id="kpiPending">–</div>
+            <div class="kpi-label">Pending</div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-closed">
+          <div class="kpi-card-body">
+            <div class="kpi-value" id="kpiClean">–</div>
+            <div class="kpi-label">Clean</div>
+          </div>
+        </div>
+      </section>
+      <label class="sort-label">
+        Sort by
+        <select id="sortSelect">
+          <option value="assigned-desc">Assigned: most first</option>
+          <option value="assigned-asc">Assigned: least first</option>
+          <option value="pending-desc">Pending: most first</option>
+          <option value="pending-asc">Pending: least first</option>
+          <option value="name-asc">Name A–Z</option>
+        </select>
+      </label>
+    </div>
+
+    <!-- Table -->
+    <section class="table-card" aria-label="Team members">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th class="sortable" tabindex="0" data-sort="name">
+                Username <span class="sort-ic">▲▼</span>
+              </th>
+              <th class="sortable" tabindex="0" data-sort="assigned">
+                Assigned Task Count <span class="sort-ic">▲▼</span>
+              </th>
+              <th class="sortable" tabindex="0" data-sort="pending">
+                Pending Task for More Than 15 mins
+                <span class="sort-ic">▲▼</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- ROW: Ajay Rai — assigned:1, pending:0 -->
+            <tr class="urg-none" data-name="Ajay Rai" data-handle="ajay.rai" data-assigned="1" data-pending="0">
+              <td>
+                <div class="uname-cell">
+                  <span class="u-avatar" style="background: #e9f0fe; color: #2451c4">AR</span>
+                  <span>
+                    <div class="u-name">Ajay Rai</div>
+                    <div class="u-handle">ajay.rai</div>
+                  </span>
+                </div>
+              </td>
+              <td>
+                <div class="task-bar-wrap">
+                  <a href="#" class="task-link" data-member="Ajay Rai" data-count="1"
+                    aria-label="View 1 assigned task for Ajay Rai">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    1 Task
+                  </a>
+                  <div class="task-bar">
+                    <div class="task-bar-fill" style="width: 7%"></div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="pending-pill pend-zero"><span class="p-count">0</span> Tasks</span>
+              </td>
+            </tr>
+
+            <!-- ROW: Payal Saluja — assigned:7, pending:2 -->
+            <tr class="urg-low" data-name="Payal Saluja" data-handle="payal.saluja" data-assigned="7" data-pending="2">
+              <td>
+                <div class="uname-cell">
+                  <span class="u-avatar" style="background: #fdeef0; color: #c8102e">PS</span>
+                  <span>
+                    <div class="u-name">Payal Saluja</div>
+                    <div class="u-handle">payal.saluja</div>
+                  </span>
+                </div>
+              </td>
+              <td>
+                <div class="task-bar-wrap">
+                  <a href="#" class="task-link" data-member="Payal Saluja" data-count="7"
+                    aria-label="View 7 assigned tasks for Payal Saluja">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    7 Tasks
+                  </a>
+                  <div class="task-bar">
+                    <div class="task-bar-fill" style="width: 47%"></div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="pending-pill pend-low"><span class="p-count">2</span> Tasks</span>
+              </td>
+            </tr>
+
+            <!-- ROW: Sumitra S — assigned:12, pending:11 -->
+            <tr class="urg-high" data-name="Sumitra S" data-handle="sumitra.s" data-assigned="12" data-pending="11">
+              <td>
+                <div class="uname-cell">
+                  <span class="u-avatar" style="background: #fef3e2; color: #b7791f">SS</span>
+                  <span>
+                    <div class="u-name">Sumitra S</div>
+                    <div class="u-handle">sumitra.s</div>
+                  </span>
+                </div>
+              </td>
+              <td>
+                <div class="task-bar-wrap">
+                  <a href="#" class="task-link" data-member="Sumitra S" data-count="12"
+                    aria-label="View 12 assigned tasks for Sumitra S">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    12 Tasks
+                  </a>
+                  <div class="task-bar">
+                    <div class="task-bar-fill" style="width: 80%"></div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="pending-pill pend-high"><span class="p-count">11</span> Tasks</span>
+              </td>
+            </tr>
+
+            <!-- ROW: Vijayashree D — assigned:15, pending:4 -->
+            <tr class="urg-medium" data-name="Vijayashree D" data-handle="vijayashree.d" data-assigned="15"
+              data-pending="4">
+              <td>
+                <div class="uname-cell">
+                  <span class="u-avatar" style="background: #e6f6ec; color: #1e7d3c">VD</span>
+                  <span>
+                    <div class="u-name">Vijayashree D</div>
+                    <div class="u-handle">vijayashree.d</div>
+                  </span>
+                </div>
+              </td>
+              <td>
+                <div class="task-bar-wrap">
+                  <a href="#" class="task-link" data-member="Vijayashree D" data-count="15"
+                    aria-label="View 15 assigned tasks for Vijayashree D">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    15 Tasks
+                  </a>
+                  <div class="task-bar">
+                    <div class="task-bar-fill" style="width: 100%"></div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="pending-pill pend-medium"><span class="p-count">4</span> Tasks</span>
+              </td>
+            </tr>
+
+            <!-- ROW: Renson Dsouza — assigned:9, pending:1 -->
+            <tr class="urg-low" data-name="Renson Dsouza" data-handle="renson.dsouza" data-assigned="9"
+              data-pending="1">
+              <td>
+                <div class="uname-cell">
+                  <span class="u-avatar" style="background: #f3f0fe; color: #6d28d9">RD</span>
+                  <span>
+                    <div class="u-name">Renson Dsouza</div>
+                    <div class="u-handle">renson.dsouza</div>
+                  </span>
+                </div>
+              </td>
+              <td>
+                <div class="task-bar-wrap">
+                  <a href="#" class="task-link" data-member="Renson Dsouza" data-count="9"
+                    aria-label="View 9 assigned tasks for Renson Dsouza">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    9 Tasks
+                  </a>
+                  <div class="task-bar">
+                    <div class="task-bar-fill" style="width: 60%"></div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="pending-pill pend-low"><span class="p-count">1</span> Task</span>
+              </td>
+            </tr>
+
+            <!-- ROW: Bhuvaneshwari Y — assigned:13, pending:8 -->
+            <tr class="urg-high" data-name="Bhuvaneshwari Y" data-handle="bhuvaneshwari.y" data-assigned="13"
+              data-pending="8">
+              <td>
+                <div class="uname-cell">
+                  <span class="u-avatar" style="background: #fce8e8; color: #b3161c">BY</span>
+                  <span>
+                    <div class="u-name">Bhuvaneshwari Y</div>
+                    <div class="u-handle">bhuvaneshwari.y</div>
+                  </span>
+                </div>
+              </td>
+              <td>
+                <div class="task-bar-wrap">
+                  <a href="#" class="task-link" data-member="Bhuvaneshwari Y" data-count="13"
+                    aria-label="View 13 assigned tasks for Bhuvaneshwari Y">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    13 Tasks
+                  </a>
+                  <div class="task-bar">
+                    <div class="task-bar-fill" style="width: 87%"></div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="pending-pill pend-high"><span class="p-count">8</span> Tasks</span>
+              </td>
+            </tr>
+
+            <!-- ROW: Nagendra Rajawat — assigned:6, pending:0 -->
+            <tr class="urg-none" data-name="Nagendra Rajawat" data-handle="nagendra.rajawat" data-assigned="6"
+              data-pending="0">
+              <td>
+                <div class="uname-cell">
+                  <span class="u-avatar" style="background: #e9f0fe; color: #1e3a8a">NR</span>
+                  <span>
+                    <div class="u-name">Nagendra Rajawat</div>
+                    <div class="u-handle">nagendra.rajawat</div>
+                  </span>
+                </div>
+              </td>
+              <td>
+                <div class="task-bar-wrap">
+                  <a href="#" class="task-link" data-member="Nagendra Rajawat" data-count="6"
+                    aria-label="View 6 assigned tasks for Nagendra Rajawat">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    6 Tasks
+                  </a>
+                  <div class="task-bar">
+                    <div class="task-bar-fill" style="width: 40%"></div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="pending-pill pend-zero"><span class="p-count">0</span> Tasks</span>
+              </td>
+            </tr>
+
+            <!-- ROW: Greeshma Shetty — assigned:4, pending:3 -->
+            <tr class="urg-low" data-name="Greeshma Shetty" data-handle="greeshma.shetty" data-assigned="4"
+              data-pending="3">
+              <td>
+                <div class="uname-cell">
+                  <span class="u-avatar" style="background: #e6f6ec; color: #1e7d3c">GS</span>
+                  <span>
+                    <div class="u-name">Greeshma Shetty</div>
+                    <div class="u-handle">greeshma.shetty</div>
+                  </span>
+                </div>
+              </td>
+              <td>
+                <div class="task-bar-wrap">
+                  <a href="#" class="task-link" data-member="Greeshma Shetty" data-count="4"
+                    aria-label="View 4 assigned tasks for Greeshma Shetty">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    4 Tasks
+                  </a>
+                  <div class="task-bar">
+                    <div class="task-bar-fill" style="width: 27%"></div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="pending-pill pend-low"><span class="p-count">3</span> Tasks</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-foot">
+        <div class="pager" id="pager"></div>
+        <div class="rows-per-page">
+          Rows per page
+          <select id="rowsPerPage">
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="25">25</option>
+          </select>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ═══════════════════════════════════════════
+       DRILL-DOWN PANEL — agent email task list
+  ════════════════════════════════════════════ -->
+  <section class="drilldown-panel" id="drilldownPanel" aria-label="Agent task list" hidden>
+    <div class="page" style="padding-top: 2rem">
+      <!-- back header -->
+      <div class="drilldown-head">
+        <button class="back-btn" id="backBtn" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+          <span id="drilldownLabel">Member</span>
+        </button>
+      </div>
+
+      <!-- status filter chips -->
+      <div class="status-chip-group" id="ddStatusChipGroup" role="group" aria-label="Filter by status"
+        style="padding: 0 2rem; margin-top: 1.6rem;"></div>
+      <div class="sr-only" id="ddStatusChipAnnouncer" role="status" aria-live="polite"></div>
+
+      <!-- email table -->
+      <section class="table-card" style="margin-top: 1.6rem" aria-label="Agent emails">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 3.6rem">
+                  <input type="checkbox" class="checkbox" id="ddSelectAll" aria-label="Select all" />
+                </th>
+                <th>Email ID &amp; Subject</th>
+                <th class="sortable" tabindex="0" data-ddsort="created">
+                  Created On <span class="sort-ic">▲▼</span>
+                </th>
+                <th class="sortable" tabindex="0" data-ddsort="updated">
+                  Updated On <span class="sort-ic">▲▼</span>
+                </th>
+                <th class="sortable" tabindex="0" data-ddsort="tat">
+                  Email TAT <span class="sort-ic">▲▼</span>
+                </th>
+                <th>Priority / Bucket Time</th>
+                <th>Email Status</th>
+                <th style="text-align: center">View</th>
+                <th>Assign / Reassign</th>
+              </tr>
+            </thead>
+            <tbody id="ddTableBody">
+              <!-- Sumitra S — 12 tasks, shown when her row is clicked -->
+
+              <tr class="dd-row row-status-Pending" data-member="Sumitra S" data-created-ts="1" data-updated-ts="0"
+                data-tat-min="6265">
+                <td>
+                  <input type="checkbox" class="checkbox dd-row-check" aria-label="Select email 1" />
+                </td>
+                <td>
+                  <div class="cell-subject">
+                    <span class="cell-id">sumitra.subrahmanya104@gmail.com</span>
+                    <span class="cell-sub">[EXT]Preauth Request</span>
+                  </div>
+                </td>
+                <td>23/06/2026 09:18</td>
+                <td>–</td>
+                <td>
+                  <span class="tat-chip tat-warn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 9v4l2.5 2.5M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" />
+                    </svg>6 Days 5h 25min</span>
+                </td>
+                <td>
+                  <span class="priority-tag priority-Normal"><span class="priority-dot"></span>Normal
+                    <span style="color: #9aa2b1; font-weight: 500">6 Days 5h 6min</span></span>
+                </td>
+                <td>
+                  <span class="status-pill status-Pending">Pending</span>
+                </td>
+                <td style="text-align: center">
+                  <button class="icon-btn-sm" aria-label="View email">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" />
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                    </svg>
+                  </button>
+                </td>
+                <td>
+                  <button class="avatar-pill assign-Assigned" data-ddr="1">
+                    <span class="av-circle">SS</span><span class="name-part">Sumitra S</span>
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="dd-row row-status-Pending" data-member="Sumitra S" data-created-ts="2" data-updated-ts="0"
+                data-tat-min="7449">
+                <td>
+                  <input type="checkbox" class="checkbox dd-row-check" aria-label="Select email 2" />
+                </td>
+                <td>
+                  <div class="cell-subject">
+                    <span class="cell-id">sumitra.subrahmanya104@gmail.com</span>
+                    <span class="cell-sub">[EXT]Preauth Request</span>
+                  </div>
+                </td>
+                <td>22/06/2026 10:35</td>
+                <td>–</td>
+                <td>
+                  <span class="tat-chip tat-warn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 9v4l2.5 2.5M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" />
+                    </svg>7 Days 4h 9min</span>
+                </td>
+                <td>
+                  <span class="priority-tag priority-Normal"><span class="priority-dot"></span>Normal
+                    <span style="color: #9aa2b1; font-weight: 500">7 Days 4h 1min</span></span>
+                </td>
+                <td>
+                  <span class="status-pill status-Pending">Pending</span>
+                </td>
+                <td style="text-align: center">
+                  <button class="icon-btn-sm" aria-label="View email">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" />
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                    </svg>
+                  </button>
+                </td>
+                <td>
+                  <button class="avatar-pill assign-Assigned" data-ddr="2">
+                    <span class="av-circle">SS</span><span class="name-part">Sumitra S</span>
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="dd-row row-status-Pending" data-member="Sumitra S" data-created-ts="3" data-updated-ts="0"
+                data-tat-min="24706">
+                <td>
+                  <input type="checkbox" class="checkbox dd-row-check" aria-label="Select email 3" />
+                </td>
+                <td>
+                  <div class="cell-subject">
+                    <span class="cell-id">sumitra.subrahmanya104@gmail.com</span>
+                    <span class="cell-sub">[EXT]Preauth Request</span>
+                  </div>
+                </td>
+                <td>12/06/2026 12:58</td>
+                <td>–</td>
+                <td>
+                  <span class="tat-chip tat-warn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 9v4l2.5 2.5M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" />
+                    </svg>17 Days 1h 46min</span>
+                </td>
+                <td>
+                  <span class="priority-tag priority-Normal"><span class="priority-dot"></span>Normal
+                    <span style="color: #9aa2b1; font-weight: 500">17 Days 0h 10min</span></span>
+                </td>
+                <td>
+                  <span class="status-pill status-Pending">Pending</span>
+                </td>
+                <td style="text-align: center">
+                  <button class="icon-btn-sm" aria-label="View email">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" />
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                    </svg>
+                  </button>
+                </td>
+                <td>
+                  <button class="avatar-pill assign-Assigned" data-ddr="3">
+                    <span class="av-circle">SS</span><span class="name-part">Sumitra S</span>
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="dd-row row-status-Pending" data-member="Sumitra S" data-created-ts="4" data-updated-ts="0"
+                data-tat-min="24721">
+                <td>
+                  <input type="checkbox" class="checkbox dd-row-check" aria-label="Select email 4" />
+                </td>
+                <td>
+                  <div class="cell-subject">
+                    <span class="cell-id">sumitra.subrahmanya104@gmail.com</span>
+                    <span class="cell-sub">[EXT]Preauth Request</span>
+                  </div>
+                </td>
+                <td>12/06/2026 12:43</td>
+                <td>–</td>
+                <td>
+                  <span class="tat-chip tat-warn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 9v4l2.5 2.5M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" />
+                    </svg>17 Days 2h 1min</span>
+                </td>
+                <td>
+                  <span class="priority-tag priority-Normal"><span class="priority-dot"></span>Normal
+                    <span style="color: #9aa2b1; font-weight: 500">17 Days 1h 47min</span></span>
+                </td>
+                <td>
+                  <span class="status-pill status-Pending">Pending</span>
+                </td>
+                <td style="text-align: center">
+                  <button class="icon-btn-sm" aria-label="View email">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" />
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                    </svg>
+                  </button>
+                </td>
+                <td>
+                  <button class="avatar-pill assign-Assigned" data-ddr="4">
+                    <span class="av-circle">SS</span><span class="name-part">Sumitra S</span>
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="dd-row row-status-Pending" data-member="Sumitra S" data-created-ts="5" data-updated-ts="0"
+                data-tat-min="24720">
+                <td>
+                  <input type="checkbox" class="checkbox dd-row-check" aria-label="Select email 5" />
+                </td>
+                <td>
+                  <div class="cell-subject">
+                    <span class="cell-id">sumitra.subrahmanya104@gmail.com</span>
+                    <span class="cell-sub">[EXT]Preauth Request</span>
+                  </div>
+                </td>
+                <td>12/06/2026 12:43</td>
+                <td>–</td>
+                <td>
+                  <span class="tat-chip tat-warn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 9v4l2.5 2.5M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" />
+                    </svg>17 Days 2h 0min</span>
+                </td>
+                <td>
+                  <span class="priority-tag priority-Normal"><span class="priority-dot"></span>Normal
+                    <span style="color: #9aa2b1; font-weight: 500">17 Days 1h 47min</span></span>
+                </td>
+                <td>
+                  <span class="status-pill status-Pending">Pending</span>
+                </td>
+                <td style="text-align: center">
+                  <button class="icon-btn-sm" aria-label="View email">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" />
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                    </svg>
+                  </button>
+                </td>
+                <td>
+                  <button class="avatar-pill assign-Assigned" data-ddr="5">
+                    <span class="av-circle">SS</span><span class="name-part">Sumitra S</span>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- generic rows for other members (data-member used to filter) -->
+              <tr class="dd-row row-status-Open" data-member="Ajay Rai" data-created-ts="10" data-updated-ts="10"
+                data-tat-min="12">
+                <td>
+                  <input type="checkbox" class="checkbox dd-row-check" aria-label="Select" />
+                </td>
+                <td>
+                  <div class="cell-subject">
+                    <span class="cell-id">ajay.rai@dummy.com</span><span class="cell-sub">Cashless Pre-Auth – Policy
+                      00321</span>
+                  </div>
+                </td>
+                <td>29/06/2026 13:10</td>
+                <td>29/06/2026 13:22</td>
+                <td><span class="tat-chip">0 Days 0h 12min</span></td>
+                <td>
+                  <span class="priority-tag priority-Normal"><span class="priority-dot"></span>Normal
+                    <span style="color: #9aa2b1; font-weight: 500">0 Days 0h 8min</span></span>
+                </td>
+                <td><span class="status-pill status-Open">Open</span></td>
+                <td style="text-align: center">
+                  <button class="icon-btn-sm" aria-label="View">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" />
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                    </svg>
+                  </button>
+                </td>
+                <td>
+                  <button class="avatar-pill assign-Assigned" data-ddr="10">
+                    <span class="av-circle">AR</span><span class="name-part">Ajay Rai</span>
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="dd-row row-status-Open" data-member="Payal Saluja" data-created-ts="20" data-updated-ts="20"
+                data-tat-min="18">
+                <td>
+                  <input type="checkbox" class="checkbox dd-row-check" aria-label="Select" />
+                </td>
+                <td>
+                  <div class="cell-subject">
+                    <span class="cell-id">payal.saluja@dummy.com</span><span class="cell-sub">Reimbursement claim –
+                      2800 00123</span>
+                  </div>
+                </td>
+                <td>29/06/2026 12:45</td>
+                <td>29/06/2026 13:03</td>
+                <td><span class="tat-chip">0 Days 0h 18min</span></td>
+                <td>
+                  <span class="priority-tag priority-High"><span class="priority-dot"></span>High
+                    <span style="color: #9aa2b1; font-weight: 500">0 Days 0h 14min</span></span>
+                </td>
+                <td><span class="status-pill status-Open">Open</span></td>
+                <td style="text-align: center">
+                  <button class="icon-btn-sm" aria-label="View">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" />
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                    </svg>
+                  </button>
+                </td>
+                <td>
+                  <button class="avatar-pill assign-Assigned" data-ddr="20">
+                    <span class="av-circle">PS</span><span class="name-part">Payal Saluja</span>
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="dd-row row-status-UnderProcess" data-member="Vijayashree D" data-created-ts="30"
+                data-updated-ts="30" data-tat-min="65">
+                <td>
+                  <input type="checkbox" class="checkbox dd-row-check" aria-label="Select" />
+                </td>
+                <td>
+                  <div class="cell-subject">
+                    <span class="cell-id">vijayashree.d@dummy.com</span><span class="cell-sub">Policy renewal query –
+                      Optima Secure</span>
+                  </div>
+                </td>
+                <td>29/06/2026 10:00</td>
+                <td>29/06/2026 11:05</td>
+                <td>
+                  <span class="tat-chip tat-warn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 9v4l2.5 2.5M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" />
+                    </svg>0 Days 1h 5min</span>
+                </td>
+                <td>
+                  <span class="priority-tag priority-Normal"><span class="priority-dot"></span>Normal
+                    <span style="color: #9aa2b1; font-weight: 500">0 Days 1h 0min</span></span>
+                </td>
+                <td>
+                  <span class="status-pill status-UnderProcess">Under Process</span>
+                </td>
+                <td style="text-align: center">
+                  <button class="icon-btn-sm" aria-label="View">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" />
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                    </svg>
+                  </button>
+                </td>
+                <td>
+                  <button class="avatar-pill assign-Assigned" data-ddr="30">
+                    <span class="av-circle">VD</span><span class="name-part">Vijayashree D</span>
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="dd-row row-status-Closed" data-member="Renson Dsouza" data-created-ts="40" data-updated-ts="41"
+                data-tat-min="8">
+                <td>
+                  <input type="checkbox" class="checkbox dd-row-check" aria-label="Select" />
+                </td>
+                <td>
+                  <div class="cell-subject">
+                    <span class="cell-id">renson.dsouza@dummy.com</span><span class="cell-sub">[EXT]Fwd:
+                      Pre-Authorization Request</span>
+                  </div>
+                </td>
+                <td>29/06/2026 14:28</td>
+                <td>29/06/2026 14:36</td>
+                <td><span class="tat-chip">0 Days 0h 8min</span></td>
+                <td>
+                  <span class="priority-tag priority-Normal"><span class="priority-dot"></span>Normal
+                    <span style="color: #9aa2b1; font-weight: 500">0 Days 0h 5min</span></span>
+                </td>
+                <td><span class="status-pill status-Closed">Closed</span></td>
+                <td style="text-align: center">
+                  <button class="icon-btn-sm" aria-label="View">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" />
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                    </svg>
+                  </button>
+                </td>
+                <td>
+                  <button class="avatar-pill assign-Assigned" data-ddr="40">
+                    <span class="av-circle">RD</span><span class="name-part">Renson Dsouza</span>
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="dd-row row-status-Pending" data-member="Bhuvaneshwari Y" data-created-ts="50"
+                data-updated-ts="0" data-tat-min="156">
+                <td>
+                  <input type="checkbox" class="checkbox dd-row-check" aria-label="Select" />
+                </td>
+                <td>
+                  <div class="cell-subject">
+                    <span class="cell-id">bhuvaneshwari.y@dummy.com</span><span class="cell-sub">[EXT]Fwd:
+                      Preauth Request</span>
+                  </div>
+                </td>
+                <td>29/06/2026 12:16</td>
+                <td>–</td>
+                <td>
+                  <span class="tat-chip tat-warn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 9v4l2.5 2.5M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" />
+                    </svg>0 Days 2h 36min</span>
+                </td>
+                <td>
+                  <span class="priority-tag priority-Normal"><span class="priority-dot"></span>Normal
+                    <span style="color: #9aa2b1; font-weight: 500">0 Days 2h 30min</span></span>
+                </td>
+                <td>
+                  <span class="status-pill status-Pending">Pending</span>
+                </td>
+                <td style="text-align: center">
+                  <button class="icon-btn-sm" aria-label="View">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" />
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                    </svg>
+                  </button>
+                </td>
+                <td>
+                  <button class="avatar-pill assign-Assigned" data-ddr="50">
+                    <span class="av-circle">BY</span><span class="name-part">Bhuvaneshwari Y</span>
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="dd-row row-status-Closed" data-member="Nagendra Rajawat" data-created-ts="60"
+                data-updated-ts="61" data-tat-min="6">
+                <td>
+                  <input type="checkbox" class="checkbox dd-row-check" aria-label="Select" />
+                </td>
+                <td>
+                  <div class="cell-subject">
+                    <span class="cell-id">nagendra.rajawat@dummy.com</span><span class="cell-sub">Fw: Pre-Auth
+                      Approval Follow-up</span>
+                  </div>
+                </td>
+                <td>29/06/2026 12:50</td>
+                <td>29/06/2026 12:56</td>
+                <td><span class="tat-chip">0 Days 0h 6min</span></td>
+                <td>
+                  <span class="priority-tag priority-Normal"><span class="priority-dot"></span>Normal
+                    <span style="color: #9aa2b1; font-weight: 500">0 Days 0h 3min</span></span>
+                </td>
+                <td><span class="status-pill status-Closed">Closed</span></td>
+                <td style="text-align: center">
+                  <button class="icon-btn-sm" aria-label="View">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" />
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                    </svg>
+                  </button>
+                </td>
+                <td>
+                  <button class="avatar-pill assign-Assigned" data-ddr="60">
+                    <span class="av-circle">NR</span><span class="name-part">Nagendra Rajawat</span>
+                  </button>
+                </td>
+              </tr>
+
+              <tr class="dd-row row-status-Open" data-member="Greeshma Shetty" data-created-ts="70" data-updated-ts="71"
+                data-tat-min="20">
+                <td>
+                  <input type="checkbox" class="checkbox dd-row-check" aria-label="Select" />
+                </td>
+                <td>
+                  <div class="cell-subject">
+                    <span class="cell-id">Greeshma.Shetty@dummy.com</span><span class="cell-sub">Pre-Authorization
+                      Request For (Policy…)</span>
+                  </div>
+                </td>
+                <td>29/06/2026 12:01</td>
+                <td>29/06/2026 12:21</td>
+                <td>
+                  <span class="tat-chip tat-warn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 9v4l2.5 2.5M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" />
+                    </svg>0 Days 0h 20min</span>
+                </td>
+                <td>
+                  <span class="priority-tag priority-Normal"><span class="priority-dot"></span>Normal
+                    <span style="color: #9aa2b1; font-weight: 500">0 Days 0h 15min</span></span>
+                </td>
+                <td><span class="status-pill status-Open">Open</span></td>
+                <td style="text-align: center">
+                  <button class="icon-btn-sm" aria-label="View">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" />
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                    </svg>
+                  </button>
+                </td>
+                <td>
+                  <button class="avatar-pill assign-Assigned" data-ddr="70">
+                    <span class="av-circle">GS</span><span class="name-part">Greeshma Shetty</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-foot">
+          <div class="pager" id="ddPager"></div>
+          <div class="rows-per-page">
+            Rows per page
+            <select id="ddRowsPerPage">
+              <option value="5" selected>5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+            </select>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span class="dot" aria-hidden="true"></span>
+    <span id="toastMsg">Done</span>
+  </div>
+
+  <!-- Assign / Reassign popup for drilldown -->
+  <section class="assign-popover" id="teamAssignPop" aria-label="Assign / Reassign" hidden>
+    <div class="popover-label" style="
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+        ">
+      <span>Assign / Reassign</span>
+      <span id="teamAssignTargetLabel" style="font-size: 11px; color: #c8102e; font-weight: 800"></span>
+    </div>
+
+    <div style="padding: 0 8px 8px">
+      <label class="sr-only" for="teamAssignSearch">Search user</label>
+      <input id="teamAssignSearch" class="search-input" type="text" placeholder="Search user…" autocomplete="off" />
+
+      <div class="user-list" id="teamAssignUserList">
+        <button class="popover-opt" type="button" role="menuitemradio" data-user="Unassigned" data-handle="">
+          <span class="av">—</span>Unassign
+        </button>
+        <button class="popover-opt" type="button" role="menuitemradio" data-user="Ajay Rai" data-handle="ajay.rai">
+          <span class="av">AR</span>Ajay Rai
+        </button>
+        <button class="popover-opt" type="button" role="menuitemradio" data-user="Payal Saluja"
+          data-handle="payal.saluja">
+          <span class="av">PS</span>Payal Saluja
+        </button>
+        <button class="popover-opt" type="button" role="menuitemradio" data-user="Sumitra S" data-handle="sumitra.s">
+          <span class="av">SS</span>Sumitra S
+        </button>
+        <button class="popover-opt" type="button" role="menuitemradio" data-user="Vijayashree D"
+          data-handle="vijayashree.d">
+          <span class="av">VD</span>Vijayashree D
+        </button>
+        <button class="popover-opt" type="button" role="menuitemradio" data-user="Renson Dsouza"
+          data-handle="renson.dsouza">
+          <span class="av">RD</span>Renson Dsouza
+        </button>
+        <button class="popover-opt" type="button" role="menuitemradio" data-user="Bhuvaneshwari Y"
+          data-handle="bhuvaneshwari.y">
+          <span class="av">BY</span>Bhuvaneshwari Y
+        </button>
+        <button class="popover-opt" type="button" role="menuitemradio" data-user="Nagendra Rajawat"
+          data-handle="nagendra.rajawat">
+          <span class="av">NR</span>Nagendra Rajawat
+        </button>
+        <button class="popover-opt" type="button" role="menuitemradio" data-user="Greeshma Shetty"
+          data-handle="greeshma.shetty">
+          <span class="av">GS</span>Greeshma Shetty
+        </button>
+      </div>
+
+      <div style="margin-top: 10px">
+        <label class="popover-label" for="teamAssignReason"
+          style="display: block; padding: 0; margin-bottom: 6px">Reason for assignment</label>
+        <textarea id="teamAssignReason" rows="3" placeholder="Enter reason…"
+          aria-describedby="teamAssignReasonHelp"></textarea>
+        <div id="teamAssignReasonHelp" class="sr-only">
+          Reason is required.
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="tool-btn" id="teamAssignSaveBtn" type="button">
+          Save
+        </button>
+        <button class="tool-btn" id="teamAssignCancelBtn" type="button">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </section>
+
+
+
+<!-- shared/searchable-select.js is the one shared/ script this otherwise
+     self-contained page loads — see AGENTS.md Iterations for why: it's a
+     brand-new, page-agnostic DOM utility with no page-specific logic to
+     duplicate, so one extra classic <script> tag (plain global, no
+     import/export, same file:// -safe pattern as every other shared/
+     script) was judged lower-risk than hand-duplicating ~250 lines of
+     component logic into email-team-app.js and keeping two copies in
+     sync. Loaded with defer, same as this page's own script, and before
+     it so initSearchableSelect() etc. are defined first. -->
+<script src="shared/searchable-select.js" defer></script>
+<script src="email-team-app.js" defer></script>
+</body>
+
+</html>

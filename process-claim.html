@@ -1,0 +1,3727 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Process Claim | ABC Health Claims Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <!-- =====================================================================
+       AGENTS.md (v1.0.0) · AGENTS.md (v1.1.0) compliance:
+       - Design tokens in variables.css (must load first)
+       - Component & utility styles in styles.css
+       - JS behaviour in process-claim.js
+       - No inline CSS (style="") in this document
+       - No inline JavaScript (onclick, onchange, etc.) in this document
+       ===================================================================== -->
+  <!-- Design tokens — must load before styles.css -->
+  <link rel="stylesheet" href="variables.css">
+  <!-- Component & utility styles -->
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+</head>
+
+<body>
+
+  <!-- ===================== TOASTS ===================== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <div class="topbar" role="banner">
+    <div class="brand">
+      <div class="hamburger-wrap" id="hamburgerWrap">
+        <button class="hamburger-btn" id="hamburgerBtn" type="button" aria-label="Open navigation menu"
+          aria-haspopup="true" aria-expanded="false" aria-controls="navDropdownMenu" class="hamburger-mr">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <line x1="4" y1="7" x2="20" y2="7" />
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <line x1="4" y1="17" x2="20" y2="17" />
+          </svg>
+        </button>
+
+        <div class="nav-dropdown-menu hidden" id="navDropdownMenu">
+          <div class="nav-dropdown-head">Navigate</div>
+          <div class="nav-dropdown-body">
+            <div class="nav-dropdown-section-label">Modules</div>
+            <a href="./index.html" class="nav-dropdown-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg>
+              Scan Tag
+            </a>
+            <a href="./email-pool-dashboard-modern3.html" class="nav-dropdown-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              Email Pool
+            </a>
+            <a href="./email-team-dashboard.html" class="nav-dropdown-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+              Email Team Dashboard
+            </a>
+            <a href="./reports.html" class="nav-dropdown-link disabled" aria-disabled="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10" />
+                <line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" />
+              </svg>
+              Reports
+            </a>
+
+            <div class="nav-dropdown-divider"></div>
+            <div class="nav-dropdown-section-label">Quick Actions</div>
+            <a href="./index.html" class="nav-dropdown-link" id="navDropdownListView">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="8" y1="6" x2="21" y2="6" />
+                <line x1="8" y1="12" x2="21" y2="12" />
+                <line x1="8" y1="18" x2="21" y2="18" />
+                <line x1="3" y1="6" x2="3.01" y2="6" />
+                <line x1="3" y1="12" x2="3.01" y2="12" />
+                <line x1="3" y1="18" x2="3.01" y2="18" />
+              </svg>
+              List View
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M4 4h16v6.5c0 6-4 9.5-8 11.5-4-2-8-5.5-8-11.5V4z" fill="#fff" fill-opacity=".92" />
+        </svg>
+      </div>
+      <div class="brand-text">
+        <b>ABC</b>
+        <span>HEALTH CLAIMS PORTAL</span>
+      </div>
+    </div>
+
+    <!-- ===== Global Search Bar ===== -->
+    <div class="global-search" role="search" aria-label="Global search across records">
+      <!-- ===== Custom Dropdown ===== -->
+      <div class="gs-dropdown" id="gsDropdown">
+        <div class="gs-dropdown__trigger" id="gsDropdownTrigger" role="button" tabindex="0" aria-haspopup="listbox"
+          aria-expanded="false" aria-label="Search category">
+          <span class="gs-dropdown__trigger-label" id="gsDropdownLabel">Claim Policy Num</span>
+          <svg class="gs-dropdown__trigger-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+        <div class="gs-dropdown__overlay" id="gsDropdownOverlay"></div>
+        <div class="gs-dropdown__menu" id="gsDropdownMenu" role="listbox">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+      <input class="global-search__input" type="text" id="globalSearchInput"
+        placeholder="Search any record across all modules..." aria-label="Search query" autocomplete="off">
+      <button class="global-search__clear" id="globalSearchClear" type="button" aria-label="Clear search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M15 9l-6 6M9 9l6 6" />
+        </svg>
+      </button>
+      <button class="gs-advanced-btn" id="gsAdvancedBtn" type="button" aria-label="Advanced search"
+        title="Advanced Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="4" y1="6" x2="20" y2="6" />
+          <line x1="7" y1="12" x2="17" y2="12" />
+          <line x1="10" y1="18" x2="14" y2="18" />
+        </svg>
+        <span>Advanced</span>
+      </button>
+      <button class="global-search__submit" id="globalSearchSubmit" type="button" aria-label="Execute search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.3-4.3" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- ===== Advanced Search Modal ===== -->
+    <div class="gs-advanced-overlay" id="gsAdvancedOverlay">
+      <div class="gs-advanced-modal" id="gsAdvancedModal" role="dialog" aria-label="Advanced Search">
+        <div class="gs-advanced-modal__header">
+          <span class="gs-advanced-modal__title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+              <line x1="4" y1="6" x2="20" y2="6" />
+              <line x1="7" y1="12" x2="17" y2="12" />
+            </svg>
+            Advanced Search
+          </span>
+          <button class="gs-advanced-modal__close" id="gsAdvancedClose" type="button" aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+              stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="gs-advanced-modal__body">
+          <!-- Row: Category Dropdown + Keyword -->
+          <div class="gs-advanced-row">
+            <div class="gs-advanced-field">
+              <label for="gsAdvCategory">Category</label>
+              <select id="gsAdvCategory">
+                <!-- populated by JS -->
+              </select>
+            </div>
+            <div class="gs-advanced-field">
+              <label for="gsAdvKeyword">Keyword</label>
+              <input type="text" id="gsAdvKeyword" placeholder="Enter search term…">
+            </div>
+          </div>
+
+          <!-- DOA/DOL Date Picker -->
+          <div class="gs-advanced-field">
+            <label>DOA / DOL <span class="req">*</span></label>
+            <input type="date" id="gsAdvDateRange">
+          </div>
+
+          <!-- Toggle: Insured Name / DOB -->
+          <div>
+            <label class="nav-search-label">Search
+              by</label>
+            <div class="gs-advanced-toggle-group">
+              <button class="gs-advanced-toggle active" id="gsAdvToggleName" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="3.2" />
+                  <path d="M5 20c1-4 4-6 7-6s6 2 7 6" />
+                </svg>
+                Insured Name
+              </button>
+              <button class="gs-advanced-toggle" id="gsAdvToggleDob" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                Date of Birth
+              </button>
+            </div>
+          </div>
+
+          <!-- Conditional field -->
+          <div class="gs-advanced-field gs-advanced-conditional" id="gsAdvConditionalField">
+            <label id="gsAdvConditionalLabel" for="gsAdvConditionalInput">Insured Name</label>
+            <input type="text" id="gsAdvConditionalInput" placeholder="Enter insured name…">
+          </div>
+        </div>
+
+        <div class="gs-advanced-modal__footer">
+          <button class="btn btn-outline" id="gsAdvancedClearAll" type="button">Clear All</button>
+          <button class="btn btn-primary" id="gsAdvancedSearch" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+            </svg>
+            Search
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-wrap" id="profileWrap">
+      <button class="who profile-btn" id="profileBtn" type="button" aria-haspopup="true" aria-expanded="false">
+        <div class="avatar" id="profileAvatar">RS</div>
+        <div class="who-text">
+          <b id="profileUserName">Rahul Sharma</b>
+          <span id="profileRoleName">Medico</span>
+        </div>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+
+      <div class="role-dropdown hidden" id="roleDropdown">
+        <div class="role-dropdown-title">Select Role</div>
+        <div class="role-list" id="roleList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SHELL ===================== -->
+  <div class="shell" id="appShell">
+
+    <!-- Shared tooltip for the collapsed left sidebar's icon-only rows (see styles.css / process-claim.js) -->
+    <div id="sidebarTooltip"></div>
+
+    <!-- ---------------- SIDEBAR (section checklist + references) ---------------- -->
+    <div class="sidebar collapsed" id="sidebar" role="navigation" aria-label="Section navigation">
+      <div class="sidebar-top">
+        <span class="eyebrow">Sections</span>
+        <button class="collapse-btn" id="collapseBtn" aria-label="Collapse sidebar">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4">
+            <path d="M15 6l-6 6 6 6" />
+          </svg>
+        </button>
+      </div>
+
+      <div id="sidebarMedicoContent">
+        <div class="progress-eyebrow"><span class="eyebrow" id="medicoSidebarEyebrow">Policy &amp; Member Details</span>
+        </div>
+        <div class="progress-list" id="medicoSidebarList"></div>
+
+        <div class="sidebar-spacer"></div>
+        <div class="sidebar-bottom">
+          <span class="task-pill">Claim Processing</span>
+          <div class="cin-label">Selected Claim</div>
+          <div class="cin-value mono" id="medicoDraftRef">-</div>
+          <div class="tat-row">
+            <div class="tat-block">
+              <div class="tat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7v5l3 3" />
+                </svg>
+              </div>
+              <div>
+                <div class="tat-label">TAT Target</div>
+                <div class="tat-value">30m 00s</div>
+              </div>
+            </div>
+            <div class="tat-block">
+              <div>
+                <div class="tat-label">Remaining</div>
+                <div class="tat-value green" id="tatRemainingMedico">30:00</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="reference-panel">
+            <div class="reference-panel-eyebrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                <path d="M12 2a5 5 0 0 0-5 5c0 3 2 4 2 7h6c0-3 2-4 2-7a5 5 0 0 0-5-5z" />
+                <path d="M9 21h6" />
+              </svg>
+              Always Available
+            </div>
+            <button class="reference-link ref-link-process-sheet" type="button" title="Process Sheet">
+              <span class="rl-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+                  <path d="M14 3v6h6" />
+                </svg></span>
+              <span>Process Sheet</span>
+              <svg class="rl-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <path d="M15 3h6v6" />
+                <path d="M10 14L21 3" />
+              </svg>
+            </button>
+            <button class="reference-link ref-link-claim-info" type="button" title="Claim Information Sheet">
+              <span class="rl-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 8h.01M11 12h1v5h1" />
+                </svg></span>
+              <span>Claim Information Sheet</span>
+              <svg class="rl-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <path d="M15 3h6v6" />
+                <path d="M10 14L21 3" />
+              </svg>
+            </button>
+            <button class="reference-link ref-link-claim-diary" type="button" title="Claim Diary">
+              <span class="rl-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                </svg></span>
+              <span>Claim Diary</span>
+              <svg class="rl-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <path d="M15 3h6v6" />
+                <path d="M10 14L21 3" />
+              </svg>
+            </button>
+            <button class="reference-link ref-link-claim-history" type="button" title="Claim History">
+              <span class="rl-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+                  <path d="M3 3v5h5" />
+                  <path d="M12 7v5l3 3" />
+                </svg></span>
+              <span>Claim History</span>
+              <svg class="rl-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <path d="M15 3h6v6" />
+                <path d="M10 14L21 3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------------- MAIN ---------------- -->
+    <div class="main" role="main">
+
+      <div id="viewMedicoWizard">
+
+        <div class="step-head" style="display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <h1 id="medicoStepTitle">Process Claim</h1>
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+              <a href="index.html" id="breadcrumbClaimsLink" class="breadcrumb-link">Claims</a>
+              <span class="breadcrumb-sep" aria-hidden="true">/</span>
+              <span class="breadcrumb-current" id="breadcrumbProcessCurrent">Process Claim</span>
+            </nav>
+          </div>
+          <button class="btn btn-outline" type="button" id="policyDocumentsBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
+              <path d="M12 4v12" />
+              <path d="M8 11l4 4 4-4" />
+            </svg>
+            Download Policy
+          </button>
+        </div>
+
+        <section class="policy-card" id="policySummaryCard" role="group" aria-label="Policy summary">
+          <div class="policy-card__sections-wrap">
+            <div class="policy-card__sections">
+
+              <div class="patient-section">
+                <div class="avatar-badge" aria-hidden="true">ST</div>
+                <div class="patient-section__text">
+                  <span class="policy-section__label">Patient Details</span>
+                  <span class="patient-name">Shubham Thakre</span>
+                  <span class="policy-section__value--muted">Self &bull; 31Y (Male)</span>
+                </div>
+              </div>
+
+              <div class="policy-section">
+                <span class="policy-section__label">Product &amp; Policy Number</span>
+                <div class="policy-section__row">
+                  <span class="policy-section__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M12 3l7 3v6c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V6l7-3z" />
+                    </svg>
+                  </span>
+                  <span class="policy-section__value">Optima Secure - Individual</span>
+                </div>
+                <div class="policy-section__row">
+                  <span class="policy-section__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M6 3h9l4 4v14H6z" />
+                      <path d="M15 3v4h4" />
+                      <path d="M9 12h6M9 16h6" />
+                    </svg>
+                  </span>
+                  <span class="policy-section__value">2800 0000 3218 2200</span>
+                </div>
+              </div>
+
+              <div class="policy-section">
+                <span class="policy-section__label">Policy Duration</span>
+                <div class="policy-section__row">
+                  <span class="policy-section__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                      stroke-linejoin="round" stroke-dasharray="2.6 2.6">
+                      <circle cx="12" cy="12" r="9" />
+                    </svg>
+                  </span>
+                  <span class="policy-section__value--muted">Start Date:</span>
+                  <span class="policy-section__value">15/06/2026</span>
+                </div>
+                <div class="policy-section__row">
+                  <span class="policy-section__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M5.5 5.5l13 13" />
+                    </svg>
+                  </span>
+                  <span class="policy-section__value--muted">End Date:</span>
+                  <span class="policy-section__value">14/06/2027</span>
+                </div>
+              </div>
+
+              <div class="policy-section">
+                <span class="policy-section__label">Proposer Details</span>
+                <div class="policy-section__row">
+                  <span class="policy-section__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="9" />
+                      <path
+                        d="M3 12h18M12 3c2.4 2.6 3.6 5.8 3.6 9s-1.2 6.4-3.6 9c-2.4-2.6-3.6-5.8-3.6-9S9.6 5.6 12 3z" />
+                    </svg>
+                  </span>
+                  <span class="policy-section__value">Ayushi P</span>
+                </div>
+                <div class="policy-section__row">
+                  <span class="policy-section__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path
+                        d="M4.5 4h3.4l1.4 4-2 1.4a12 12 0 0 0 5.3 5.3l1.4-2 4 1.4v3.4c0 1-1 1.8-2 1.6C9.6 18 6 14.4 4.9 8.9c-.2-1 .6-2 1.6-1.9z" />
+                    </svg>
+                  </span>
+                  <span class="policy-section__value">+91 87&bull;&bull;&bull;&bull;&bull;&bull;02</span>
+                </div>
+              </div>
+
+              <div class="policy-section" class="u-border-right-none">
+                <span class="policy-section__label">Hegi Card No &amp; Dummy ID</span>
+                <div class="policy-section__row">
+                  <span class="policy-section__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <rect x="3" y="5" width="18" height="14" rx="2" />
+                      <path d="M7 15h4M7 11h.01" />
+                      <circle cx="15.5" cy="11" r="1.6" />
+                    </svg>
+                  </span>
+                  <span class="policy-section__value">MI260000366639</span>
+                </div>
+                <div class="policy-section__row">
+                  <span class="policy-section__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <rect x="3" y="5" width="18" height="14" rx="2" />
+                      <path d="M7 15h4M7 11h.01" />
+                      <circle cx="15.5" cy="11" r="1.6" />
+                    </svg>
+                  </span>
+                  <span class="policy-section__value">MI260000366639</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="policy-card__status">
+            <button type="button" class="status-btn status-success" aria-label="Policy status: Active">
+              <span class="status-btn__dot" aria-hidden="true"></span>
+              Active
+            </button>
+          </div>
+        </section>
+
+        <!-- ============ CARD: Investigation Scores (CP-Screen Matrix > Basic Details > Investigation Scores) ============
+             Deliberately outside the per-stage wrapper divs (medicoStage1..5/HC,
+             each toggled via .hidden) so it stays visible on every stage
+             instead of only Stage 1 — the same design/data everywhere.
+             Placed above the wizard stage bar so it's the first thing
+             visible on every stage. -->
+        <div id="card-medinvestigation">
+          <div class="score-card-grid" id="scoreCardGrid"></div>
+        </div>
+
+        <!-- ============ WIZARD STAGE BAR (non-sequential) ============ -->
+        <div class="wizard-stage-bar" id="wizardStageBar"></div>
+
+        <!-- =========================================================== -->
+        <!-- STAGE 1: Policy & Member Details (current screens live here) -->
+        <!-- =========================================================== -->
+        <div id="medicoStage1">
+
+          <!-- ============ CARD: Basic Info (CP-Screen Matrix > Basic Details > Basic Info) ============ -->
+          <div class="card" id="card-medpolicy">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M21 21l-4.3-4.3" />
+                </svg>
+                Basic Info
+              </div>
+            </div>
+
+            <div class="field-section-title">Identity &amp; Policy</div>
+            <div class="field-grid">
+              <div id="medPolicyGrid" class="contents"></div>
+              <div class="field">
+                <label for="medAadhaarLast4">Aadhaar Card No. (Last 4 digits)</label>
+                <input type="text" id="medAadhaarLast4" inputmode="numeric" maxlength="4" placeholder="••••">
+                <span class="err-msg" id="medAadhaarLast4-err">Enter exactly 4 digits.</span>
+              </div>
+            </div>
+
+            <div class="field-section-title">Verification</div>
+            <div class="field-grid ">
+              <div id="medVerifyGrid" class="contents"></div>
+              <div class="field">
+                <label for="medAbhaId">ABHA ID</label>
+                <input type="text" id="medAbhaId" placeholder="14-digit ABHA number">
+              </div>
+              <div id="medVerifyAddressGrid" class="contents"></div>
+            </div>
+            <div class="u-flex-start-gap-8 " style="margin-top: 1rem; margin-bottom: 1rem;">
+              <button class="btn btn-outline btn-sm" type="button" id="medUpdateBtn">Update</button>
+              <button class="btn btn-outline btn-sm" type="button" id="medVerifyBtn">Verify</button>
+              <button class="btn btn-outline btn-sm" type="button" id="medViewPolicyBtn">View Pehchan Details</button>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="checkbox-inline"><input type="checkbox" id="medByPassPehchan">By Pass Pehchan</label>
+              </div>
+            </div>
+            <div class="field-grid ">
+              <div class="field span3">
+                <label for="medByPassPehchanRemark">By Pass Pehchan Remark</label>
+                <textarea rows="2" id="medByPassPehchanRemark" class="textarea-full"
+                  placeholder="Remark if bypassed"></textarea>
+                <span class="hint-msg">A remark is required when bypassing Pehchan verification.</span>
+              </div>
+            </div>
+
+            <div class="field-section-title">Address &amp; Contact</div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="medState">State</label>
+                <div class="autocomplete-wrap">
+                  <input type="text" id="medState" placeholder="Type to search state…" autocomplete="off"
+                    class="u-w-full-pr">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"
+                    class="autocomplete-icon-trailing">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                  <div id="medStateDropdown" class="autocomplete-dropdown"></div>
+                </div>
+              </div>
+              <div class="field">
+                <label for="medCity">City</label>
+                <div class="autocomplete-wrap">
+                  <input type="text" id="medCity" placeholder="Type to search city…" autocomplete="off"
+                    class="u-w-full-pr">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"
+                    class="autocomplete-icon-trailing">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                  <div id="medCityDropdown" class="autocomplete-dropdown"></div>
+                </div>
+              </div>
+              <div id="medAddressGrid" class="contents"></div>
+            </div>
+            <div class="field-grid ">
+              <div class="field">
+                <label for="medContactNo">Contact No.</label>
+                <input type="tel" id="medContactNo" inputmode="numeric" maxlength="10"
+                  placeholder="10-digit mobile number">
+                <span class="err-msg" id="medContactNo-err">Enter a valid 10-digit mobile number.</span>
+              </div>
+              <div class="field">
+                <label for="medAltContactNo">Alternate Contact No.</label>
+                <input type="tel" id="medAltContactNo" inputmode="numeric" maxlength="10"
+                  placeholder="10-digit mobile number">
+                <span class="err-msg" id="medAltContactNo-err">Enter a valid 10-digit mobile number.</span>
+              </div>
+              <div class="field">
+                <label for="medAltEmail">Alternate Email ID</label>
+                <input type="email" id="medAltEmail" placeholder="name@example.com">
+                <span class="err-msg" id="medAltEmail-err">Enter a valid email address.</span>
+              </div>
+            </div>
+
+            <div class="field-section-title">Claimant Details</div>
+            <div class="field-grid" id="medClaimantEditableGrid">
+              <div class="field">
+                <label for="medClaimantName">Claimant Name <span class="req">*</span></label>
+                <input type="text" id="medClaimantName" placeholder="Enter claimant name">
+              </div>
+              <div class="field">
+                <label for="medClaimantMobile">Claimant Mobile Number</label>
+                <input type="tel" id="medClaimantMobile" inputmode="numeric" maxlength="10"
+                  placeholder="10-digit mobile number">
+                <span class="err-msg" id="medClaimantMobile-err">Enter a valid 10-digit mobile number.</span>
+              </div>
+              <div class="field">
+                <label for="medClaimantEmail">Claimant Email ID</label>
+                <input type="email" id="medClaimantEmail" placeholder="name@example.com">
+                <span class="err-msg" id="medClaimantEmail-err">Enter a valid email address.</span>
+              </div>
+              <div class="field span2">
+                <label for="medClaimantAddress">Claimant Address <span class="req">*</span></label>
+                <input type="text" id="medClaimantAddress" placeholder="Enter claimant address">
+              </div>
+              <div class="field">
+                <label for="medPartnerReferenceId">Partner Reference Id</label>
+                <input type="text" id="medPartnerReferenceId" value="-" disabled>
+              </div>
+              <div class="field">
+                <label class="checkbox-inline"><input type="checkbox" id="pdProposerExpired">Proposer Expired</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ CARD: Hospitalisation Details ============ -->
+          <div class="card" id="card-medhospitalization">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z" />
+                  <circle cx="12" cy="10" r="2.4" />
+                </svg>
+                Hospitalisation Details
+              </div>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="medHospCaseNo">Hospital Case Number</label>
+                <input type="text" id="medHospCaseNo">
+              </div>
+              <div class="field">
+                <label for="medHospName">Hospital Name <span class="req">*</span></label>
+                <div class="autocomplete-wrap">
+                  <input type="text" id="medHospName" class="u-w-full-pr" autocomplete="off">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"
+                    class="autocomplete-icon-trailing">
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="M21 21l-4.3-4.3" />
+                  </svg>
+                  <div id="medHospDropdown" class="autocomplete-dropdown"></div>
+                </div>
+              </div>
+              <div class="field">
+                <label for="medAilment">Ailment as per discharge card <span class="req">*</span></label>
+                <input type="text" id="medAilment">
+              </div>
+              <div class="field">
+                <label for="medHospAddress">Hospital Address</label>
+                <input type="text" id="medHospAddress" disabled>
+              </div>
+              <div class="field">
+                <label for="medHospLocation">Hospital Location</label>
+                <input type="text" id="medHospLocation" disabled>
+              </div>
+              <div class="field">
+                <label for="medHospContactNo">Contact No</label>
+                <input type="text" id="medHospContactNo" disabled>
+              </div>
+              <div class="field">
+                <label for="medHospCity">Hospital City</label>
+                <input type="text" id="medHospCity" disabled>
+              </div>
+              <div class="field">
+                <label for="medHospState">Hospital State</label>
+                <input type="text" id="medHospState" disabled>
+              </div>
+              <div class="field">
+                <label for="medHospPinCode">Hospital Pin Code</label>
+                <input type="text" id="medHospPinCode" disabled>
+              </div>
+              <div class="field">
+                <label for="medClaimedAmount">Claimed Amount <span class="req">*</span></label>
+                <input type="text" id="medClaimedAmount" inputmode="numeric">
+              </div>
+              <div class="field">
+                <label for="medDateOfAdmission">Date of Admission <span class="req">*</span></label>
+                <input type="date" id="medDateOfAdmission">
+              </div>
+              <div class="field">
+                <label for="medDateOfDischarge">Date of Discharge <span class="req">*</span></label>
+                <input type="date" id="medDateOfDischarge">
+              </div>
+              <div class="field">
+                <label for="medAdmTime">Time of Admission</label>
+                <input type="time" id="medAdmTime" step="1">
+              </div>
+              <div class="field">
+                <label for="medDisTime">Time of Discharge</label>
+                <input type="time" id="medDisTime" step="1">
+              </div>
+              <div class="field">
+                <label for="medAdmissionInTime">Admission IN Time</label>
+                <input type="text" id="medAdmissionInTime" placeholder="HH:MM">
+                <span class="err-msg" id="medAdmissionInTime-err">Enter time in 24 hour HH:MM format.</span>
+              </div>
+              <div class="field">
+                <label for="medDischargeOutTime">Discharge OUT Time</label>
+                <input type="text" id="medDischargeOutTime" placeholder="HH:MM">
+                <span class="err-msg" id="medDischargeOutTime-err">Enter time in 24 hour HH:MM format.</span>
+              </div>
+              <div class="field">
+                <label for="medMajorIllness">Major Illness</label>
+                <select id="medMajorIllness">
+                  <option value="None">None</option>
+                  <option value="Cancer">Cancer</option>
+                  <option value="Cardiac">Cardiac</option>
+                  <option value="Renal">Renal</option>
+                  <option value="Neurological">Neurological</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="u-flex-start-gap-10 u-mt-16">
+              <label class="checkbox-inline"><input type="checkbox" id="medHomeHealthCare">Home Health Care
+                Applied</label>
+              <label class="checkbox-inline"><input type="checkbox" id="medDeath">Death</label>
+              <label class="checkbox-inline"><input type="checkbox" id="medIsPortablePolicy">Is Portable Policy</label>
+            </div>
+          </div>
+
+          <!-- ============ CARD: Payment Details ============ -->
+          <div class="card" id="card-medpayment">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="5" width="20" height="14" rx="2" />
+                  <path d="M2 10h20" />
+                </svg>
+                Payment Details
+              </div>
+              <button class="btn btn-primary btn-sm" id="addPaymentBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                Add Payment
+              </button>
+            </div>
+            <!-- Payment Mode grid — Read-only for every role per the matrix -->
+            <div class="table-card" class="table-card--no-shadow">
+              <div class="table-scroll">
+                <table class="u-min-w-1100">
+                  <thead>
+                    <tr>
+                      <th scope="col">NEFT Code</th>
+                      <th scope="col">Payment Mode</th>
+                      <th scope="col">Payee Name</th>
+                      <th scope="col">Account No</th>
+                      <th scope="col">Account Type</th>
+                      <th scope="col">Bank Name</th>
+                      <th scope="col">Branch Name</th>
+                      <th scope="col">IFSC Code</th>
+                      <th scope="col">PAN No</th>
+                      <th scope="col">Email ID</th>
+                      <th scope="col">Source</th>
+                    </tr>
+                  </thead>
+                  <tbody id="paymentGridBody"></tbody>
+                </table>
+              </div>
+              <div class="empty-state hidden" id="paymentEmptyState" class="u-pad-section">
+                <p class="u-text-sm-muted-plain">No payment details added yet.</p>
+              </div>
+            </div>
+            <!-- Verify button below grid (Non Medico) -->
+            <div id="paymentGridVerifyRow" class="hidden" class="tag-group-divider">
+              <button class="btn btn-outline" type="button" id="paymentGridVerifyBtn" class="u-text-blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="u-icon-sm">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M21 21l-4.3-4.3" />
+                </svg>
+                Verify with Existing Records
+              </button>
+              <span id="paymentGridVerifyResult" class="field-note--danger"></span>
+            </div>
+
+            <!-- ============ Add Payment Details (Proposer) — Read-only summary for
+                 Medico, who has no access to the Add Payment page itself ============ -->
+            <div id="paymentProposerSummary" class="hidden">
+              <div class="field-section-title" style="margin-top: 2rem;">Add Payment Details</div>
+              <div class="field-grid">
+                <div class="field"><label for="ppPayeeName">Payee Name</label><input type="text" id="ppPayeeName" disabled></div>
+                <div class="field"><label for="ppPaymentMode">Payment Mode</label><input type="text" id="ppPaymentMode" disabled></div>
+                <div class="field"><label for="ppBankName">Bank Name</label><input type="text" id="ppBankName" disabled></div>
+                <div class="field"><label for="ppAccountNo">Account Number</label><input type="text" id="ppAccountNo" class="mono"
+                    disabled></div>
+                <div class="field"><label for="ppIfscCode">IFSC Code</label><input type="text" id="ppIfscCode" class="mono" disabled>
+                </div>
+                <div class="field"><label for="ppBranchName">Branch Name</label><input type="text" id="ppBranchName" disabled></div>
+                <div class="field"><label for="ppAccountType">Account Type</label><input type="text" id="ppAccountType" disabled></div>
+                <div class="field"><label for="ppPanNo">PAN Number</label><input type="text" id="ppPanNo" class="mono" disabled>
+                </div>
+                <div class="field span2"><label for="ppNeftRemark">NEFT Remark</label><input type="text" id="ppNeftRemark" disabled>
+                </div>
+                <div class="field"><label for="ppEmailId">E-Mail ID</label><input type="text" id="ppEmailId" disabled></div>
+              </div>
+            </div>
+
+            <!-- ============ Penny Drop Bank Account Status (kept in this same card) ============ -->
+            <div class="field-section-title">Penny Drop Bank Account Status</div>
+            <div class="field-grid">
+              <div class="field"><label for="pdName">Name</label><input type="text" id="pdName" disabled></div>
+              <div class="field"><label for="pdIfscCode">IFSC Code</label><input type="text" id="pdIfscCode" class="mono" disabled></div>
+              <div class="field"><label for="pdBankName">Bank Name</label><input type="text" id="pdBankName" disabled></div>
+              <div class="field"><label for="pdAccountNo">Account Number</label><input type="text" id="pdAccountNo" class="mono" disabled>
+              </div>
+              <div class="field"><label for="pdAccountType">Account Type</label><input type="text" id="pdAccountType" disabled></div>
+              <div class="field">
+                <label>Account Status</label>
+                <div class="pd-status-combo">
+                  <label class="pd-box pd-status--action"><input type="checkbox" id="pennyDropBtn" aria-describedby="pdAccountStatus">Verify Penny
+                    Drop</label>
+                  <span class="pd-box pd-status--success" id="pdAccountStatus" aria-live="polite">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3">
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                    Verified
+                  </span>
+                </div>
+              </div>
+              <div class="field">
+                <label class="checkbox-inline"><input type="checkbox" id="pdBypassValidation">By Pass Penny Drop
+                  Validation</label>
+              </div>
+            </div>
+            <div class="field u-mt-16">
+              <label for="pdBypassReason">Bypass Reason</label>
+              <textarea rows="2" id="pdBypassReason" class="textarea-full"
+                placeholder="Reason for bypassing Penny Drop validation"></textarea>
+            </div>
+            <div class="field u-mt-16">
+              <label for="pdBypassRemarks">Bypass Remarks</label>
+              <textarea rows="2" id="pdBypassRemarks" class="textarea-full"
+                placeholder="Additional remarks for bypassing Penny Drop validation"></textarea>
+            </div>
+
+            <div class="checkbox-inline-group u-mt-16">
+              <label class="checkbox-inline"><input type="checkbox" id="pdKycSubmitted">Is KYC Submitted?</label>
+              <label class="checkbox-inline"><input type="checkbox" id="pdNeftDocSubmitted">Is NEFT Doc
+                Submitted?</label>
+            </div>
+            <span id="pennyDropResult" class="field-note--success u-mt-8"></span>
+
+            <div class="field-section-title">Previous Claim Details</div>
+            <button class="btn-link" type="button" id="pdViewPreviousClaimsBtn">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+                <path d="M14 3v6h6" />
+              </svg>
+              View Previous Claims Details
+            </button>
+          </div>
+
+          <!-- ============ CARD: Document Checklist ============ -->
+          <div class="card" id="card-medchecklist">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 12l2 2 4-4" />
+                  <circle cx="12" cy="12" r="9" />
+                </svg>
+                Document Checklist
+              </div>
+              <!-- <span class="card-hint">Mark each document as received - missing documents are highlighted</span> -->
+            </div>
+
+            <div class="field-section-title">Required Claim Documents Received</div>
+            <div id="medPennyDropChecklist" class="req-doc-grid"></div>
+          </div>
+
+          <!-- ============ CARD: Document Upload ============ -->
+          <div class="card" id="card-meddocuments">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 16a4 4 0 0 1-.88-7.9A5.5 5.5 0 0 1 17.5 8H18a3.5 3.5 0 0 1 .5 6.97" /><path d="M12 12v8" /><path d="M9 15l3-3 3 3" />
+                </svg>
+                Document Upload
+              </div>
+              <div class="u-flex-center-gap-8">
+                <select id="medDocCategorySelect" class="input-compact"></select>
+                <label class="btn btn-primary btn-sm u-cursor-pointer">
+                  Upload
+                  <input type="file" id="medDocFileInput" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.tiff,.tif">
+                </label>
+              </div>
+            </div>
+
+            <div class="field hidden u-mb-14" id="medDocOtherField">
+              <label>Custom Document Type <span class="req">*</span></label>
+              <input type="text" id="medDocOtherLabel" placeholder="Describe the document type">
+            </div>
+
+            <div class="section-subhead section-subhead--with-action">
+              Document Upload
+              <button class="btn btn-outline btn-sm" id="medBulkUploadBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
+                  <path d="M7 9l5-5 5 5" />
+                  <path d="M12 4v12" />
+                </svg>
+                Bulk Upload
+              </button>
+            </div>
+            <div class="ci-upload-layout">
+              <div class="ci-upload-left">
+                <div class="ci-dropzone" id="medUploadDropzone">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <path d="M14 3H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7z" /><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M12 12.5v6" /><path d="M9.3 15.2L12 12.5l2.7 2.7" />
+                  </svg>
+                  <div class="ci-dropzone-title">Drop files here or click to browse</div>
+                  <div class="ci-dropzone-sub">PDF, JPG, PNG, DOCX — select multiple files</div>
+                  <input type="file" id="medUploadFileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.docx"
+                    class="hidden">
+                </div>
+                <div class="ci-doc-list" id="medUploadDocList"></div>
+                <div class="ci-doc-save-bar hidden" id="medUploadDocSaveBar">
+                  <button class="btn btn-primary btn-sm" id="medUploadSaveBtn" type="button">Save Files</button>
+                </div>
+                <div class="ci-upload-footer">
+                  <span id="medUploadMandatoryCount">0 / 5 mandatory documents uploaded</span>
+                </div>
+                <div class="ci-doc-grouped hidden" id="medUploadGroupedList"></div>
+              </div>
+              <div class="ci-upload-right">
+                <div class="ci-preview-empty" id="medUploadPreviewEmpty">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <path d="M14 3H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7z" /><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M9.5 14.5l1.8 1.8L14.5 12.5" />
+                  </svg>
+                  <p>Select a document on the left to preview it here.</p>
+                </div>
+                <div class="ci-preview-body hidden" id="medUploadPreviewBody">
+                  <div class="ci-preview-header">
+                    <span class="mono" id="medUploadPreviewName">-</span>
+                    <button class="icon-btn ci-preview-newtab-btn" id="medUploadPreviewNewTab" type="button" title="Open in new tab" aria-label="Open in new tab">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                        <path d="M15 3h6v6" />
+                        <path d="M10 14L21 3" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="ci-preview-frame" id="medUploadPreviewFrame"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ CARD: Remarks (unified trail + add) ============ -->
+          <div class="card" id="card-medremarks1">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                Remarks
+              </div>
+            </div>
+            <div class="remark-section hidden" id="card-userremarks1">
+              <div class="remark-section-label">All Remarks</div>
+              <div id="userRemarksBody1"></div>
+              <p class="hidden u-text-sm-muted" id="userRemarksEmpty1">No remarks from other users yet.</p>
+              <div class="table-footer hidden" id="userRemarksFooter1">
+                <div class="pgsize">
+                  Show
+                  <select id="userRemarksPageSize1">
+                    <option value="10" selected>10</option>
+                  </select>
+                  entries per page &nbsp;&middot;&nbsp; <span class="result-count" id="userRemarksResultCount1">0 results</span>
+                </div>
+                <div class="pager" id="userRemarksPager1"></div>
+              </div>
+            </div>
+            <div class="remark-add-box">
+              <div class="field">
+                <label for="remarksInput1">Add a remark for the next user</label>
+                <textarea rows="2" id="remarksInput1" placeholder="Type a note for whoever processes this claim next..."
+                  class="textarea-full"></textarea>
+              </div>
+              <button class="btn btn-primary btn-sm" id="remarksAddBtn1" type="button" class="u-mt-10">Save
+                Remark</button>
+            </div>
+          </div>
+
+        </div>
+        <!-- ===== end Stage 1 ===== -->
+
+        <!-- =========================================================== -->
+        <!-- STAGE 2: Hospital Details                                    -->
+        <!-- =========================================================== -->
+        <div id="medicoStage2" class="hidden">
+          <div class="card" id="card-medhospital">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path
+                    d="M4 8V5a1 1 0 0 1 1-1h3M20 8V5a1 1 0 0 1-1-1h-3M4 16v3a1 1 0 0 0 1 1h3M20 16v3a1 1 0 0 1-1 1h-3M4 12h16" />
+                </svg>
+                Hospital Details
+              </div>
+              <!-- <span class="card-hint">All fields editable</span> -->
+            </div>
+            <div class="field-grid">
+              
+              <div class="field">
+                <label for="hdHospitalName">Hospital Name</label>
+                <div class="autocomplete-wrap">
+                  <input type="text" id="hdHospitalName" class="u-w-full-pr" autocomplete="off">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"
+                    class="autocomplete-icon-trailing">
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="M21 21l-4.3-4.3" />
+                  </svg>
+                  <div id="hdHospitalDropdown" class="autocomplete-dropdown"></div>
+                </div>
+              </div>
+                <div class="field"><label for="hdProviderNo">Provider No</label><input type="text" id="hdProviderNo" value="HEGIC-HS-02666">
+                </div>
+                <div class="field"><label for="hdRegNo">Hospital Registration No</label><input type="text" id="hdRegNo" value=""></div>
+                <div class="field"><label for="hdAddress">Hospital Address</label><textarea rows="2" id="hdAddress"
+                    class="textarea-full"></textarea>
+                </div>
+                <div class="field"><label for="hdLocation">Hospital Location</label><textarea rows="2" id="hdLocation"
+                    class="textarea-full"></textarea>
+                </div>
+
+              <div class="field">
+                <label for="hdState">Hospital State</label>
+                <div class="autocomplete-wrap">
+                  <input type="text" id="hdState" placeholder="Type to search state…" autocomplete="off"
+                    class="u-w-full-pr">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"
+                    class="autocomplete-icon-trailing">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                  <div id="hdStateDropdown" class="autocomplete-dropdown"></div>
+                </div>
+              </div>
+              <div class="field">
+                <label for="hdHospitalType">Type of Hospital</label>
+                <select id="hdHospitalType">
+                  <option value="Hospital/Nursing Home" selected>Hospital/Nursing Home</option>
+                  <option value="Day Care Centre">Day Care Centre</option>
+                  <option value="Diagnostic Centre">Diagnostic Centre</option>
+                  <option value="Clinic">Clinic</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="hdCity">Hospital City</label>
+                <div class="autocomplete-wrap">
+                  <input type="text" id="hdCity" placeholder="Type to search city…" autocomplete="off"
+                    class="u-w-full-pr">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"
+                    class="autocomplete-icon-trailing">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                  <div id="hdCityDropdown" class="autocomplete-dropdown"></div>
+                </div>
+              </div>
+              <div class="field"><label for="hdPinCode">Pin Code</label><input type="text" id="hdPinCode"></div>
+
+              <div class="field"><label for="hdPanNo">Hospital PAN No</label><input type="text" id="hdPanNo" value="AAATC2820L"></div>
+              <div class="field"><label for="hdContactNo">Hospital Contact No</label><input type="text" id="hdContactNo"></div>
+
+              <div class="field"><label for="hdEmailId">Email ID</label><input type="text" id="hdEmailId"
+                  value="chscmc2@hotmail.com,narinder@example.com"></div>
+              <div class="field"><label for="hdProprietorName">Hospital Proprietor Name</label><input type="text" id="hdProprietorName"
+                  value=""></div>
+            </div>
+          </div>
+
+          <!-- ============ CARD: Hospitalization Details (accommodation/room grid) ============ -->
+          <div class="card" id="card-medhospitalization2">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z" />
+                  <circle cx="12" cy="10" r="2.4" />
+                </svg>
+                Hospitalization Details
+              </div>
+            </div>
+            <div class="table-card">
+              <div class="table-scroll table-scroll--wide">
+                <table class="grid-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Accommodation Type <span class="req">*</span></th>
+                      <th scope="col">Type of Room <span class="req">*</span></th>
+                      <th scope="col">Room Category <span class="req">*</span></th>
+                      <th scope="col">Room No / Bed No</th>
+                      <th scope="col">From Date <span class="req">*</span></th>
+                      <th scope="col">To Date <span class="req">*</span></th>
+                      <th class="col-sticky-action" scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="hospitalizationGridBody"></tbody>
+                </table>
+              </div>
+              <div class="table-footer">
+                <button class="btn btn-outline btn-sm" type="button" id="hospitalizationAddRowBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                  Add Row
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ CARD: Consultant Details + Prescriptions ============ -->
+          <div class="card" id="card-medconsultant">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
+                  <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+                </svg>
+                Consultant Details
+              </div>
+            </div>
+            <div class="table-card">
+              <div class="table-scroll">
+                <table class="grid-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Reg. No</th>
+                      <th scope="col">HPID</th>
+                      <th scope="col">Contact No</th>
+                      <th scope="col">Speciality</th>
+                      <th scope="col">PAN</th>
+                      <th class="col-sticky-action" scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="consultantGridBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="u-flex-gap-10 u-mt-10">
+              <button class="btn btn-outline btn-sm" type="button" id="consultantSearchBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M21 21l-4.3-4.3" />
+                </svg>
+                Search
+              </button>
+              <button class="btn btn-outline btn-sm" type="button" id="consultantAddRowBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                Add Row
+              </button>
+            </div>
+
+            <div class="field-section-title">Consultant Advice / Prescriptions</div>
+            <div class="table-card">
+              <div id="prescriptionTableWrap" class="table-scroll">
+                <table class="grid-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Medicines</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">Power</th>
+                      <th scope="col">Dosage</th>
+                      <th scope="col">Days</th>
+                      <th scope="col">CONSULTANT DETAILS</th>
+                      <th class="col-sticky-action" scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="prescriptionGridBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="u-flex-gap-10 u-mt-10">
+              <button class="btn btn-outline btn-sm" type="button" id="prescriptionSearchBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M21 21l-4.3-4.3" />
+                </svg>
+                Search
+              </button>
+              <button class="btn btn-outline btn-sm" type="button" id="prescriptionAddRowBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                Add Row
+              </button>
+            </div>
+          </div>
+
+          <!-- ============ CARD: Investigations + Radiologist/Pathologist Details ============ -->
+          <div class="card" id="card-medinvestigationdetails">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M21 21l-4.3-4.3" />
+                </svg>
+                Investigations
+              </div>
+            </div>
+            <div class="table-card">
+              <div class="table-scroll table-scroll--wide">
+                <table class="grid-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Investigation</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">Unit</th>
+                      <th scope="col">Consultant Details</th>
+                      <th class="col-sticky-action" scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="investigationGridBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="u-flex-gap-10 u-mt-10">
+              <button class="btn btn-outline btn-sm" type="button" id="investigationSearchBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M21 21l-4.3-4.3" />
+                </svg>
+                Search
+              </button>
+              <button class="btn btn-outline btn-sm" type="button" id="investigationAddRowBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                Add Row
+              </button>
+            </div>
+
+            <div class="field-section-title">Radiologist Details</div>
+            <div class="table-card">
+              <div class="table-scroll table-scroll--wide">
+                <table class="grid-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Address</th>
+                      <th scope="col">Pincode</th>
+                      <th scope="col">Registration No</th>
+                      <th scope="col">Email ID</th>
+                      <th scope="col">Phone Number</th>
+                      <th scope="col">Lab Name</th>
+                      <th scope="col">NABL Reg. No</th>
+                      <th scope="col">Report Date/Time</th>
+                      <th class="col-sticky-action" scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="radiologistGridBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <button class="btn btn-outline btn-sm u-mt-10" type="button" id="radiologistAddRowBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Add Row
+            </button>
+
+            <div class="field-section-title">Pathologist Details</div>
+            <div class="table-card">
+              <div class="table-scroll table-scroll--wide">
+                <table class="grid-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Address</th>
+                      <th scope="col">Pincode</th>
+                      <th scope="col">Pathologist Number</th>
+                      <th scope="col">Email ID</th>
+                      <th scope="col">Phone Number</th>
+                      <th scope="col">Lab Name</th>
+                      <th scope="col">NABL Reg. No</th>
+                      <th scope="col">Report Date/Time</th>
+                      <th class="col-sticky-action" scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="pathologistGridBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <button class="btn btn-outline btn-sm u-mt-10" type="button" id="pathologistAddRowBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Add Row
+            </button>
+          </div>
+
+          <!-- ============ CARD: Remarks (unified trail + add) ============ -->
+          <div class="card" id="card-medremarks2">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                Remarks
+              </div>
+            </div>
+            <div class="remark-section hidden" id="card-userremarks2">
+              <div class="remark-section-label">All Remarks</div>
+              <div id="userRemarksBody2"></div>
+              <p class="hidden u-text-sm-muted" id="userRemarksEmpty2">No remarks from other users yet.</p>
+              <div class="table-footer hidden" id="userRemarksFooter2">
+                <div class="pgsize">
+                  Show
+                  <select id="userRemarksPageSize2">
+                    <option value="10" selected>10</option>
+                  </select>
+                  entries per page &nbsp;&middot;&nbsp; <span class="result-count" id="userRemarksResultCount2">0 results</span>
+                </div>
+                <div class="pager" id="userRemarksPager2"></div>
+              </div>
+            </div>
+            <div class="remark-add-box">
+              <div class="field">
+                <label for="remarksInput2">Add a remark for the next user</label>
+                <textarea rows="2" id="remarksInput2" placeholder="Type a note for whoever processes this claim next..."
+                  class="textarea-full"></textarea>
+              </div>
+              <button class="btn btn-primary btn-sm" id="remarksAddBtn2" type="button" class="u-mt-10">Save
+                Remark</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- =========================================================== -->
+        <!-- STAGE 3: Case Details                                        -->
+        <!-- =========================================================== -->
+        <div id="medicoStage3" class="hidden">
+          <div class="card" id="card-medcase">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 12h6M9 16h6M9 8h2" />
+                  <rect x="4" y="4" width="16" height="16" rx="2" />
+                </svg>
+                Case Details
+              </div>
+              <span class="card-hint mono" id="cdClaimNumber">Claim Number: -</span>
+            </div>
+            <p class="card-hint u-mb-0" id="cdRoleHint">All fields editable</p>
+
+            <div class="section-subhead">Claim Type</div>
+            <div class="radio-inline-group">
+              <label class="radio-inline"><input type="radio" name="cdCareType" id="cdCareTypeDomiciliary"
+                  value="Domiciliary">Domiciliary</label>
+              <label class="radio-inline"><input type="radio" name="cdCareType" id="cdCareTypeDayCare"
+                  value="Day Care">Day Care</label>
+              <label class="radio-inline"><input type="radio" name="cdCareType" id="cdCareTypeInpatient"
+                  value="Inpatient">Inpatient</label>
+              <label class="radio-inline"><input type="radio" name="cdCareType" id="cdCareTypeOpd"
+                  value="OPD">OPD</label>
+            </div>
+
+          </div>
+
+          <!-- ============ CARD: Medical History ============ -->
+          <div class="card" id="card-medhistory">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 3v18h18" />
+                  <path d="M18.7 8l-5.1 5.1-3-3L4 16.5" />
+                </svg>
+                Medical History
+              </div>
+            </div>
+            <div class="table-card">
+              <div class="table-scroll table-scroll--wide">
+                <table class="grid-table" id="medicalHistoryGrid">
+                  <thead>
+                    <tr>
+                      <th>Medical History Level</th>
+                      <th>ICD Code</th>
+                      <th>Start Date</th>
+                      <th>End Date</th>
+                      <th class="col-sticky-action"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="medicalHistoryGridBody"></tbody>
+                </table>
+              </div>
+              <div class="table-footer">
+                <div class="u-flex-gap-10">
+                  <button class="btn btn-outline btn-sm" type="button" id="cdMedicalHistorySearchBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="7" />
+                      <path d="M21 21l-4.3-4.3" />
+                    </svg>
+                    Search
+                  </button>
+                  <button class="btn btn-outline btn-sm" type="button" id="medicalHistoryAddRowBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    Add Row
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ CARD: Medical Details ============ -->
+          <div class="card" id="card-medicaldetails">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 12h6M9 16h6M9 8h2" />
+                  <rect x="4" y="4" width="16" height="16" rx="2" />
+                </svg>
+                Medical Details
+              </div>
+            </div>
+
+            <div class="field-section-title">Conditions &amp; Findings</div>
+            <div class="field-grid">
+              <div class="field"><label for="cdAssociatedConditions">Associated Conditions</label><input type="text" id="cdAssociatedConditions">
+              </div>
+              <div class="field"><label for="cdComorbidConditions">Co-Morbid Conditions</label><input type="text" id="cdComorbidConditions"></div>
+              <div class="field"><label for="cdClinicalFindings">Clinical Findings</label><input type="text" id="cdClinicalFindings"></div>
+            </div>
+
+            <div class="field-section-title">Systemic Examination</div>
+            <div class="field-grid">
+              <div class="field"><label for="cdBloodPressure">Blood Pressure</label><input type="text" id="cdBloodPressure" placeholder="e.g. 120/80 mmHg"></div>
+              <div class="field"><label for="cdPulse">Pulse</label><input type="text" id="cdPulse" placeholder="e.g. 78 bpm"></div>
+              <div class="field"><label for="cdPerAbdomen">Abdomin Measurement</label><input type="text" id="cdPerAbdomen"></div>
+              <div class="field"><label for="cdCardioVascular">Cardio Vascular System</label><input type="text" id="cdCardioVascular"></div>
+              <div class="field"><label for="cdRespiratory">Respiratory System</label><input type="text" id="cdRespiratory"></div>
+              <div class="field"><label for="cdCns">Central Nervous System</label><input type="text" id="cdCns"></div>
+            </div>
+
+            <div class="field" class="">
+              <label>Whether Present Ailment is a Complication of any Pre-existing condition <span
+                  class="req">*</span></label>
+              <div class="radio-inline-group">
+                <label class="radio-inline"><input type="radio" name="cdComplication" id="cdComplicationNo" value="No"
+                    checked>No</label>
+                <label class="radio-inline"><input type="radio" name="cdComplication" id="cdComplicationYes"
+                    value="Yes">Yes</label>
+              </div>
+            </div>
+            <div class="field hidden" id="cdComplicationSelectField" class="u-mt-12">
+              <label for="cdComplicationSelect">If Yes Select</label>
+              <select id="cdComplicationSelect">
+                <option value="" selected disabled>--Select--</option>
+                <option value="Diabetes">Diabetes</option>
+                <option value="Hypertension">Hypertension</option>
+                <option value="Thyroid Disorder">Thyroid Disorder</option>
+                <option value="Cardiac Condition">Cardiac Condition</option>
+              </select>
+            </div>
+
+            <div class="field-grid" class="">
+              <div class="field">
+                <label for="cdSurgeriesOptima">Surgeries of Optima Senior</label>
+                <select id="cdSurgeriesOptima">
+                  <option value="" selected disabled>--Select--</option>
+                  <option value="Cataract">Cataract</option>
+                  <option value="Joint Replacement">Joint Replacement</option>
+                  <option value="Cardiac Surgery">Cardiac Surgery</option>
+                  <option value="None">None</option>
+                </select>
+              </div>
+            </div>
+
+            <fieldset class="field field-fieldset">
+              <legend>Illness Due To <span class="req">*</span></legend>
+              <div class="checkbox-inline-group">
+                <label class="checkbox-inline"><input type="checkbox" id="cdIllnessOthers">Others</label>
+                <label class="checkbox-inline"><input type="checkbox" id="cdIllnessAlcohol">Alcohol</label>
+                <label class="checkbox-inline"><input type="checkbox" id="cdIllnessHiv">HIV</label>
+                <label class="checkbox-inline"><input type="checkbox" id="cdIllnessSterility">Sterility</label>
+                <label class="checkbox-inline"><input type="checkbox" id="cdIllnessCosmetic">Cosmetic</label>
+                <label class="checkbox-inline"><input type="checkbox" id="cdIllnessCongenital">Congenital
+                  External</label>
+                <label class="checkbox-inline"><input type="checkbox" id="cdIllnessMaternity">Maternity</label>
+                <label class="checkbox-inline"><input type="checkbox" id="cdIllnessNone">None of these</label>
+              </div>
+              <div class="field u-mt-12">
+                <label for="cdIllnessOtherText">Illness Due To (Other — specify)</label>
+                <input type="text" id="cdIllnessOtherText">
+              </div>
+            </fieldset>
+
+            <div class="field-grid" class="">
+              <div class="field">
+                <label>System of Medicine <span class="req">*</span></label>
+                <select id="cdSystemOfMedicine">
+                  <option value="" selected disabled>--Select--</option>
+                  <option value="Allopathy">Allopathy</option>
+                  <option value="Ayurveda">Ayurveda</option>
+                  <option value="Homeopathy">Homeopathy</option>
+                  <option value="Unani">Unani</option>
+                </select>
+              </div>
+              <div class="field"><label for="cdTypeOfMedicine">Type of Medicine</label><input type="number" id="cdTypeOfMedicine" value="0">
+              </div>
+              <div class="field"><label for="cdNumberOfBed">Number of Bed</label><input type="number" id="cdNumberOfBed" value="0"></div>
+            </div>
+
+            <div class="field-grid" class="">
+              <div class="field">
+                <label for="cdAilment">Ailment <span class="req">*</span></label>
+                <div class="field-input-wrap">
+                  <input type="text" id="cdAilment" class="u-w-full-pr" data-enter-search-scope-self="cdAilmentSearchBtn">
+                  <button class="input-trailing-icon-btn" type="button" id="cdAilmentSearchBtn" aria-label="Search ailment master">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="7" />
+                      <path d="M21 21l-4.3-4.3" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="field"><label for="cdIcdCode">Ailment ICD Code</label><input type="text" id="cdIcdCode"></div>
+              <div class="field"><label for="cdDurationOfAilment">Duration of Ailment</label><input type="date" id="cdDurationOfAilment"></div>
+            </div>
+
+            <div class="field-grid" class="">
+              <div class="field"><label for="cdDiagnosis1">Diagnosis 1</label><input type="text" id="cdDiagnosis1"></div>
+              <div class="field"><label for="cdDiagnosisCode1">Diagnosis Code Level 1</label><input type="text" id="cdDiagnosisCode1"></div>
+              <div class="field"></div>
+              <div class="field"><label for="cdDiagnosis2">Diagnosis 2</label><input type="text" id="cdDiagnosis2"></div>
+              <div class="field"><label for="cdDiagnosisCode2">Diagnosis Code Level 2</label><input type="text" id="cdDiagnosisCode2"></div>
+              <div class="field"></div>
+              <div class="field"><label for="cdDiagnosis3">Diagnosis 3</label><input type="text" id="cdDiagnosis3"></div>
+              <div class="field"><label for="cdDiagnosisCode3">Diagnosis Code Level 3</label><input type="text" id="cdDiagnosisCode3"></div>
+            </div>
+
+            <div class="field-grid" class="">
+              <div class="field"><label for="cdSrfId">SRF ID On COVID Report</label><input type="text" id="cdSrfId"></div>
+              <div class="field"><label for="cdIcmrId">ICMR ID On COVID Report</label><input type="text" id="cdIcmrId"></div>
+            </div>
+
+            <div class="field-grid" class="">
+              <div class="field">
+                <label for="cdCptProcedure">CPT Procedure</label>
+                <div class="field-input-wrap">
+                  <input type="text" id="cdCptProcedure" class="u-w-full-pr" data-enter-search-scope-self="cdCptSearchBtn">
+                  <button class="input-trailing-icon-btn" type="button" id="cdCptSearchBtn" aria-label="Search CPT procedure master">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="7" />
+                      <path d="M21 21l-4.3-4.3" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="field"><label for="cdCptCode">CPT Code</label><input type="text" id="cdCptCode"></div>
+              <div class="field"><label for="cdShortDescriptor">Short Descriptor</label><input type="text" id="cdShortDescriptor"></div>
+              <div class="field"><label for="cdConceptId">Concept ID</label><input type="number" id="cdConceptId" value="0"></div>
+              <div class="field"><label for="cdMediumDescriptor">Medium Descriptor</label><input type="text" id="cdMediumDescriptor"></div>
+              <div class="field"><label for="cdParentId">Parent ID</label><input type="text" id="cdParentId"></div>
+              <div class="field"><label for="cdDescriptor">Descriptor</label><input type="text" id="cdDescriptor"></div>
+            </div>
+
+            <div class="field-grid" class="">
+              <div class="field">
+                <label>Treatment Type <span class="req">*</span></label>
+                <select id="cdTreatmentType">
+                  <option value="" selected disabled>--Select--</option>
+                  <option value="Medical">Medical</option>
+                  <option value="Surgical">Surgical</option>
+                  <option value="Diagnostic">Diagnostic</option>
+                </select>
+              </div>
+              <div class="field"><label for="cdDateOfAdmission">Date of Admission</label><input type="date" id="cdDateOfAdmission"></div>
+              <div class="field"><label for="cdDateOfDischarge">Date of Discharge</label><input type="date" id="cdDateOfDischarge"></div>
+              <div class="field"><label for="cdLengthOfStay">Length of Stay</label><input type="number" id="cdLengthOfStay" value="0"></div>
+              <div class="field"><label for="cdDelayInSurgery">Delay in Surgery</label><input type="number" id="cdDelayInSurgery" value="0">
+              </div>
+              <div class="field field--center-checkbox">
+                <label class="checkbox-inline"><input type="checkbox" id="cdMentalDisability">Mental Disability</label>
+              </div>
+            </div>
+
+            <div class="field" class="">
+              <label>Type of Anesthesia</label>
+              <div class="checkbox-inline-group">
+                <label class="checkbox-inline"><input type="checkbox" id="cdAnesLA">LA</label>
+                <label class="checkbox-inline"><input type="checkbox" id="cdAnesGA">GA</label>
+                <label class="checkbox-inline"><input type="checkbox" id="cdAnesEpidural">Epidural</label>
+                <label class="checkbox-inline"><input type="checkbox" id="cdAnesSpinal">Spinal</label>
+                <label class="checkbox-inline"><input type="checkbox" id="cdAnesRegionalBlock">Regional Block</label>
+                <label class="checkbox-inline"><input type="checkbox" id="cdAnesOther">Other</label>
+              </div>
+            </div>
+
+            <div class="field-section-title">Claim Classification Type</div>
+            <div class="checkbox-inline-group">
+              <label class="checkbox-inline"><input type="checkbox" id="cdDentalClaim">Dental Claim</label>
+              <label class="checkbox-inline"><input type="checkbox" id="cdPlasticSurgery">Plastic Surgery Claim</label>
+              <label class="checkbox-inline"><input type="checkbox" id="cdSpectacles">Spectacles, Contact Lenses,
+                Hearing Aid</label>
+              <label class="checkbox-inline"><input type="checkbox" id="cdAirAmbulance">Emergency Air Ambulance</label>
+              <label class="checkbox-inline"><input type="checkbox" id="cdReserveBenefit">Reserve Benefit</label>
+              <label class="checkbox-inline"><input type="checkbox" id="cdEmiHospitalization">EMI
+                Hospitalization</label>
+              <label class="checkbox-inline"><input type="checkbox" id="cdRtaAccident">RTA/Accident</label>
+              <label class="checkbox-inline"><input type="checkbox" id="cdMaternity">Maternity</label>
+              <label class="checkbox-inline"><input type="checkbox" id="cdPa">PA</label>
+              <label class="checkbox-inline"><input type="checkbox" id="cdCriticalIllness">Critical Illness</label>
+              <label class="checkbox-inline"><input type="checkbox" id="cdEnhancedSi">Enhanced SI</label>
+            </div>
+
+            <div class="field-section-title">Priority Claim</div>
+            <div class="field-grid">
+              <div class="field">
+                <label class="checkbox-inline"><input type="checkbox" id="cdPriorityClaim">Priority Claim</label>
+              </div>
+              <div class="field">
+                <label for="cdPriorityReason">Priority Reason</label>
+                <select id="cdPriorityReason" disabled>
+                  <option value="" selected disabled>--Select--</option>
+                  <option value="High Paying Customer">High Paying Customer</option>
+                  <option value="Covid">Covid</option>
+                  <option value="Senior Citizen">Senior Citizen</option>
+                  <option value="Women">Women</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ============ CARD: Remarks (unified trail + add) ============ -->
+          <div class="card" id="card-medremarks3">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                Remarks
+              </div>
+            </div>
+            <div class="remark-section hidden" id="card-userremarks3">
+              <div class="remark-section-label">All Remarks</div>
+              <div id="userRemarksBody3"></div>
+              <p class="hidden u-text-sm-muted" id="userRemarksEmpty3">No remarks from other users yet.</p>
+              <div class="table-footer hidden" id="userRemarksFooter3">
+                <div class="pgsize">
+                  Show
+                  <select id="userRemarksPageSize3">
+                    <option value="10" selected>10</option>
+                  </select>
+                  entries per page &nbsp;&middot;&nbsp; <span class="result-count" id="userRemarksResultCount3">0 results</span>
+                </div>
+                <div class="pager" id="userRemarksPager3"></div>
+              </div>
+            </div>
+            <div class="remark-add-box">
+              <div class="field">
+                <label for="remarksInput3">Add a remark for the next user</label>
+                <textarea rows="2" id="remarksInput3" placeholder="Type a note for whoever processes this claim next..."
+                  class="textarea-full"></textarea>
+              </div>
+              <button class="btn btn-primary btn-sm" id="remarksAddBtn3" type="button" class="u-mt-10">Save
+                Remark</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ===================== HOSPITAL SEARCH MODAL (within Hospitalisation Details) ===================== -->
+        <div class="modal-backdrop" id="hospSearchModal" data-enter-search-scope="1" data-dismissible="1">
+          <div class="modal modal--medium u-text-left" role="dialog" aria-modal="true" aria-labelledby="hospSearchModalTitle">
+            <div class="u-flex-between-mb-16">
+              <div>
+                <h2 class="u-mb-2" id="hospSearchModalTitle">Add New Hospital</h2>
+                <p class="u-mb-0 u-text-sm-muted-plain">Enter the hospital's details and save it to the hospital
+                  master.</p>
+              </div>
+              <button class="icon-btn" id="hospSearchCloseX" type="button" aria-label="Close">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="field-grid two">
+              <div class="field span2"><label for="hsHospName">Hospital Name <span class="req">*</span></label>
+                <input type="text" id="hsHospName">
+                <span class="err-msg" id="hsHospName-err">Hospital name is required.</span>
+              </div>
+              <div class="field"><label for="hsNspId">NSP ID</label><input type="text" id="hsNspId"></div>
+              <div class="field"><label for="hsIrdaId">IRDA ID</label><input type="text" id="hsIrdaId"></div>
+              <div class="field span2"><label for="hsAddress">Hospital Address</label><input type="text" id="hsAddress"></div>
+              <div class="field">
+                <label for="hsPinCode">Pin Code</label>
+                <div class="field-input-wrap">
+                  <input type="text" id="hsPinCode" inputmode="numeric" maxlength="6" class="u-w-full u-pr-90">
+                  <button class="input-trailing-link" type="button" id="hsGetDetailsBtn">Get Details</button>
+                </div>
+                <span class="err-msg" id="hsPinCode-err">Enter a valid 6-digit pin code.</span>
+              </div>
+              <div class="field"><label for="hsLocation">Location</label><input type="text" id="hsLocation"></div>
+              <div class="field"><label for="hsState">State <span class="req">*</span></label>
+                <select id="hsState">
+                  <option value="" selected disabled>--Select--</option>
+                </select>
+                <span class="err-msg" id="hsState-err">Select a state.</span>
+              </div>
+              <div class="field"><label for="hsCity">City <span class="req">*</span></label>
+                <select id="hsCity">
+                  <option value="" selected disabled>--Select--</option>
+                </select>
+                <span class="err-msg" id="hsCity-err">Select a city.</span>
+              </div>
+              <div class="field"><label for="hsTelephone">Telephone No.</label><input type="tel" id="hsTelephone" inputmode="numeric" maxlength="10">
+                <span class="err-msg" id="hsTelephone-err">Enter a valid 10-digit telephone number.</span>
+              </div>
+              <div class="field">
+                <label class="checkbox-inline"><input type="checkbox" id="hsCovidTemp">Covid Temporary
+                  Hospital</label>
+              </div>
+            </div>
+
+            <div class="modal-actions">
+              <button class="btn btn-outline" id="hospSearchCloseBtn" type="button">Close</button>
+              <button class="btn btn-primary" id="hospSearchBtn" type="button" data-enter-search-btn="1">Save</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== DOCTOR SEARCH MODAL (within Consultant Details) ===================== -->
+        <div class="modal-backdrop" id="doctorSearchModal" data-enter-search-scope="1" data-dismissible="1">
+          <div class="modal modal--medium u-text-left" role="dialog" aria-modal="true" aria-labelledby="doctorSearchModalTitle">
+            <div class="u-flex-between-mb-16">
+              <div>
+                <h2 class="u-mb-2" id="doctorSearchModalTitle">Fill Data and Proceed for Search</h2>
+                <p class="u-mb-0 u-text-sm-muted-plain">Search the doctor master to select and import a
+                  consultant's details.</p>
+              </div>
+              <button class="icon-btn" id="doctorSearchCloseX" type="button" aria-label="Close">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="field-grid two">
+              <div class="field"><label for="dsDoctorName">Doctor Name</label><input type="text" id="dsDoctorName"></div>
+              <div class="field"><label for="dsRegNo">Registration Number</label><input type="text" id="dsRegNo"></div>
+              <div class="field"><label for="dsHpid">Healthcare Professional ID</label><input type="text" id="dsHpid"></div>
+              <div class="field"><label for="dsContactNo">Contact Number</label><input type="text" id="dsContactNo"></div>
+              <div class="field">
+                <label for="dsSpeciality">Speciality</label>
+                <select id="dsSpeciality">
+                  <option value="" selected disabled>--Select--</option>
+                  <option>Cardiology</option>
+                  <option>General Medicine</option>
+                  <option>Orthopaedics</option>
+                  <option>Nephrology</option>
+                </select>
+              </div>
+              <div class="field"><label for="dsPanNo">Doctor PAN Details</label><input type="text" id="dsPanNo"></div>
+            </div>
+
+            <div class="modal-actions">
+              <button class="btn btn-outline" id="doctorSearchCloseBtn" type="button">Close</button>
+              <button class="btn btn-primary" id="doctorSearchBtn" type="button"
+                data-enter-search-btn="1">Search</button>
+            </div>
+
+            <div id="doctorSearchResultsWrap" class="hidden u-mt-18">
+              <div class="card-hint u-mb-8">Search results</div>
+              <div id="doctorSearchResultsBody" class="doc-result-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== AILMENT SEARCH MODAL (within Case Details) ===================== -->
+        <div class="modal-backdrop" id="ailmentModal" data-enter-search-scope="1" data-dismissible="1">
+          <div class="modal modal--wide u-text-left" role="dialog" aria-modal="true" aria-labelledby="ailmentModalTitle">
+            <div class="u-flex-between-mb-16">
+              <div>
+                <h2 class="u-mb-2" id="ailmentModalTitle">Fill Data and Proceed for Search</h2>
+                <p class="u-mb-0 u-text-sm-muted-plain">Search the ailment master to select an
+                  ICD-coded diagnosis.</p>
+              </div>
+              <button class="icon-btn" id="ailmentCloseX" type="button" aria-label="Close">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="field-grid">
+              <div class="field"><label for="amAilmentCode">Ailment Code</label><input type="text" id="amAilmentCode" value="R50"></div>
+              <div class="field"><label for="amAilmentName">Ailment Name</label><input type="text" id="amAilmentName"></div>
+              <div class="field">
+                <label for="amAilmentChapter">Ailment Chapter</label>
+                <select id="amAilmentChapter">
+                  <option value="" selected disabled>--Select--</option>
+                  <option>Symptoms, signs and abnormal clinical and laboratory findings, not elsewhere classified
+                  </option>
+                  <option>Diseases of the circulatory system</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="amAilmentBlock">Ailment Block</label>
+                <select id="amAilmentBlock">
+                  <option value="" selected disabled>--Select--</option>
+                  <option>General symptoms and signs</option>
+                  <option>Ischaemic heart diseases</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="amAilmentLevel3">Ailment Level 3</label>
+                <select id="amAilmentLevel3">
+                  <option value="" selected disabled>--Select--</option>
+                  <option>Fever of other and unknown origin</option>
+                  <option>Chronic ischemic heart disease</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="modal-actions">
+              <button class="btn btn-outline" id="ailmentCloseBtn" type="button">Close</button>
+              <button class="btn btn-primary" id="ailmentSearchBtn" type="button"
+                data-enter-search-btn="1">Search</button>
+            </div>
+
+            <div id="ailmentResultsWrap" class="hidden u-mt-18">
+              <div class="card-hint u-mb-8">Search results</div>
+              <div class="table-card table-card--no-shadow">
+                <div class="table-scroll ailment-results-scroll">
+                  <table class="ailment-results-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Chapter Name</th>
+                        <th scope="col">Block Name</th>
+                        <th scope="col">Level 3</th>
+                        <th scope="col">ICD Code</th>
+                        <th scope="col">ICD Name</th>
+                        <th scope="col">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="ailmentResultsBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== CPT PROCEDURE SEARCH MODAL (within Case Details) ===================== -->
+        <div class="modal-backdrop" id="cptModal" data-enter-search-scope="1" data-dismissible="1">
+          <div class="modal modal--medium u-text-left" role="dialog" aria-modal="true" aria-labelledby="cptModalTitle">
+            <div class="u-flex-between-mb-16">
+              <div>
+                <h2 class="u-mb-2" id="cptModalTitle">Fill Data and Proceed for Search</h2>
+                <p class="u-mb-0 u-text-sm-muted-plain">Search the CPT procedure master to select a
+                  coded procedure.</p>
+              </div>
+              <button class="icon-btn" id="cptCloseX" type="button" aria-label="Close">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="field-grid two">
+              <div class="field"><label for="cmCptCode">CPT Code</label><input type="text" id="cmCptCode"></div>
+              <div class="field"><label for="cmShortDescriptor">Short Descriptor</label><input type="text" id="cmShortDescriptor"></div>
+            </div>
+
+            <div class="modal-actions">
+              <button class="btn btn-outline" id="cptCloseBtn" type="button">Close</button>
+              <button class="btn btn-primary" id="cptSearchBtn" type="button"
+                data-enter-search-btn="1">Search</button>
+            </div>
+
+            <div id="cptResultsWrap" class="hidden u-mt-18">
+              <div class="card-hint u-mb-8">Search results</div>
+              <div id="cptResultsBody" class="doc-result-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== PREVIOUS CLAIM DETAILS MODAL (within Basic Info) ===================== -->
+        <div class="modal-backdrop" id="prevClaimsModal" data-dismissible="1">
+          <div class="modal modal--wide modal--compact-padding u-text-left" role="dialog" aria-modal="true" aria-labelledby="prevClaimsModalTitle">
+            <div class="u-flex-between-mb-16">
+              <div>
+                <h2 class="u-mb-2" id="prevClaimsModalTitle">Previous Claim Details</h2>
+                <p class="u-mb-0 u-text-sm-muted-plain">Claims filed earlier on this policy.</p>
+              </div>
+              <button class="icon-btn" id="prevClaimsCloseX" type="button" aria-label="Close">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="table-card">
+              <div class="table-scroll">
+                <table class="grid-table prev-claims-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Claim No.</th>
+                      <th scope="col">Intimation Date</th>
+                      <th scope="col">Hospital</th>
+                      <th scope="col">Claim Type</th>
+                      <th scope="col">Claimed Amount</th>
+                      <th scope="col">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="prevClaimsBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="modal-actions">
+              <button class="btn btn-outline" id="prevClaimsCloseBtn" type="button">Close</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================================================== -->
+        <!-- STAGE 4: Bill Details - Health                                -->
+        <!-- =========================================================== -->
+        <div id="medicoStage4" class="hidden">
+          <!-- ============ CARD: Bill Details header strip (claim summary + I3/OCR tools) ============ -->
+          <div class="card" id="card-medbillheader">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 3h9l3 3v15H6z" />
+                  <path d="M9 8h6M9 12h6M9 16h4" />
+                </svg>
+                Bill Details - Health
+              </div>
+              <span class="card-hint" id="bdClaimNumber">Claim Number: —</span>
+            </div>
+            <div class="summary-bar">
+              <div class="summary-col u-pl-16">
+                <div class="summary-eyebrow">Claimed Amount</div>
+                <div class="summary-main mono" id="bdHeaderClaimedAmount">0</div>
+              </div>
+              <div class="summary-col">
+                <div class="summary-eyebrow">Other Add-ons</div>
+                <div class="summary-main mono" id="bdOtherAddons">0</div>
+              </div>
+            </div>
+            <div class="u-flex-gap-10 u-mt-14" id="bdI3ToolsRow">
+              <button class="btn btn-outline btn-sm" type="button" id="bdOpenI3Btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <path d="M8 12h8M12 8v8" />
+                </svg>
+                Open I3 Data
+              </button>
+              <button class="btn btn-outline btn-sm" type="button" id="bdRefreshI3Btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 12a9 9 0 1 1-2.6-6.4" />
+                  <path d="M21 3v6h-6" />
+                </svg>
+                Refresh
+              </button>
+              <button class="btn btn-outline btn-sm" type="button" id="bdGetOcrBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 7V5a2 2 0 0 1 2-2h2M20 7V5a2 2 0 0 0-2-2h-2M4 17v2a2 2 0 0 0 2 2h2M20 17v2a2 2 0 0 1-2 2h-2" />
+                  <path d="M8 12h8" />
+                </svg>
+                Get OCR Status
+              </button>
+              <button class="btn btn-outline btn-sm u-text-blue" type="button" id="bdViewI3DocBtn">View Document Sent To i3</button>
+              <span class="field-note--danger show" id="bdAccClaimStatus">AccClaim Status: —</span>
+            </div>
+          </div>
+
+          <!-- ============ CARD: Bill Detail - Health Entry Form ============ -->
+          <div class="card" id="card-medbill">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                </svg>
+                Bill Detail - Health Entry Form
+              </div>
+            </div>
+
+            <div class="field-grid">
+              <div class="field">
+                <label for="bdLevel1">Bill Level 1</label>
+                <select id="bdLevel1">
+                  <option value="" selected disabled>--Select--</option>
+                  <option>Hospitalization</option>
+                  <option>Pre-Hospitalization</option>
+                  <option>Post-Hospitalization</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="bdLevel2">Bill Level 2</label>
+                <select id="bdLevel2">
+                  <option value="" selected disabled>--Select--</option>
+                  <option>Ambulance Charges</option>
+                  <option>ICU Charges</option>
+                  <option>Room Rent</option>
+                  <option>Doctor Fees</option>
+                  <option>Investigation Charges</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="bdLevel3">Bill Level 3</label>
+                <select id="bdLevel3">
+                  <option value="" selected disabled>--Select--</option>
+                  <option>Ambulance Charges</option>
+                  <option>ICU Charges</option>
+                  <option>Room Rent</option>
+                  <option>Doctor Fees</option>
+                  <option>Investigation Charges</option>
+                </select>
+              </div>
+              <div class="field"><label for="bdBillNo">Bill No</label><input type="text" id="bdBillNo"></div>
+              <div class="field"><label for="bdDate">Date</label><input type="date" id="bdDate"></div>
+              <div class="field"><label for="bdUnits">Units</label><input type="number" id="bdUnits"></div>
+              <div class="field"><label for="bdAmountPerUnit">Amount Per Units</label><input type="number" id="bdAmountPerUnit"></div>
+              <div class="field"><label for="bdClaimedAmount">Claimed Amount</label><input type="number" id="bdClaimedAmount"></div>
+              <div class="field"><label for="bdTariffAmount">Tariff Amount</label><input type="number" id="bdTariffAmount"></div>
+              <div class="field"><label for="bdTariffDeduction">Tariff Deduction</label><input type="number" id="bdTariffDeduction"></div>
+              <div class="field"><label for="bdDeduction">Deduction</label><input type="number" id="bdDeduction"></div>
+              <div class="field"><label for="bdDeductionRemark">Deduction Remark</label><input type="text" id="bdDeductionRemark"></div>
+              <div class="field"><label for="bdDiscountAsPerTariff">Discount As Per Tariff</label><input type="number" id="bdDiscountAsPerTariff">
+              </div>
+              <div class="field"><label for="bdDiscValue">Disc Value</label><input type="number" id="bdDiscValue"></div>
+              <div class="field"><label for="bdBillRemarks">Bill Remarks</label><input type="text" id="bdBillRemarks"></div>
+              <div class="field"><label>Approved Amount</label>
+                <div class="readonly-value mono" id="bdApprovedAmount">0</div>
+              </div>
+            </div>
+            <div class="u-mt-14">
+              <button class="btn btn-full-red" id="bdAddNewBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                Add New
+              </button>
+            </div>
+
+          </div>
+
+          <!-- ============ CARD: Bill Items List ============ -->
+          <div class="card" id="card-medbillitems">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 12l2 2 4-4" />
+                  <circle cx="12" cy="12" r="9" />
+                </svg>
+                Bill Items List
+              </div>
+            </div>
+            <div class="table-card table-card--no-shadow">
+              <div class="table-scroll table-scroll--wide">
+                <table class="grid-table bill-items-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Bill Level 1</th>
+                      <th scope="col">Bill Level 2</th>
+                      <th scope="col">Bill Level 3</th>
+                      <th scope="col">Bill No</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">Units</th>
+                      <th scope="col">Amount/Unit</th>
+                      <th scope="col">Claimed Amt</th>
+                      <th scope="col">Tariff Amt</th>
+                      <th scope="col">Tariff Deduction</th>
+                      <th scope="col">Deduction</th>
+                      <th scope="col">Approved Amt</th>
+                      <th scope="col" class="col-sticky-action"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="billItemsBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="summary-bar u-mt-14">
+              <div class="summary-col u-pl-16">
+                <div class="summary-eyebrow">Claimed Amount</div>
+                <div class="summary-main mono" id="billInlineClaimed">0</div>
+              </div>
+              <div class="summary-col">
+                <div class="summary-eyebrow">Discount Amount</div>
+                <div class="summary-main mono" id="billInlineDiscount">0</div>
+              </div>
+              <div class="summary-col">
+                <div class="summary-eyebrow">Tariff Deducted Amount</div>
+                <div class="summary-main mono" id="billInlineTariffDeducted">0</div>
+              </div>
+              <div class="summary-col">
+                <div class="summary-eyebrow">Deduction Amount</div>
+                <div class="summary-main mono" id="billInlineDeduction">0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ CARD: Pharmacy Charges + Calculations Summary (combined) ============ -->
+          <div class="card" id="card-medbillcalc">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 3h6l1 4H8z" />
+                  <path d="M7 7h10l1 13H6z" />
+                  <path d="M10 12h4M10 15h4" />
+                </svg>
+                Pharmacy Charges
+              </div>
+            </div>
+            <div class="summary-bar">
+              <div class="summary-col u-pl-16">
+                <div class="summary-eyebrow">Claimed Amount</div>
+                <div class="summary-main mono">16659.7</div>
+              </div>
+              <div class="summary-col">
+                <div class="summary-eyebrow">Discount Amount</div>
+                <div class="summary-main mono">0</div>
+              </div>
+              <div class="summary-col">
+                <div class="summary-eyebrow">Deducted Amount</div>
+                <div class="summary-main mono">0</div>
+              </div>
+              <div class="summary-col">
+                <div class="summary-eyebrow">Approved Amount</div>
+                <div class="summary-main mono">16659.7</div>
+              </div>
+            </div>
+            <button type="button" id="pharmacyDetailsLink" class="pharmacy-link-btn">
+              <span class="pharmacy-link-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </span>
+              <span>Click here to Edit or View Pharmacy Bill Details</span>
+              <svg class="pharmacy-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M9 6l6 6-6 6" />
+              </svg>
+            </button>
+
+            <div class="field-section-title">Calculations Summary</div>
+            <div class="summary-bar">
+              <div class="summary-col u-pl-16">
+                <div class="summary-eyebrow">Total Claimed Amount</div>
+                <div class="summary-main mono">125080.7</div>
+              </div>
+              <div class="summary-col">
+                <div class="summary-eyebrow">Total Discount Amount</div>
+                <div class="summary-main mono">0</div>
+              </div>
+              <div class="summary-col">
+                <div class="summary-eyebrow">Total Tariff Deducted Amount</div>
+                <div class="summary-main mono">0</div>
+              </div>
+              <div class="summary-col">
+                <div class="summary-eyebrow">Total Deducted Amount</div>
+                <div class="summary-main mono">16401</div>
+              </div>
+              <div class="summary-col">
+                <div class="summary-eyebrow">Total Approved Amount</div>
+                <div class="summary-main mono">108680</div>
+              </div>
+            </div>
+            <div class="u-mt-14">
+              <button class="btn btn-full-red" id="billCalculateBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M5 12h14" />
+                  <path d="M12 5l7 7-7 7" />
+                </svg>
+                Calculate
+              </button>
+            </div>
+          </div>
+
+          <!-- ============ CARD: HC Details (dropdown-revealed: Hospital Daily Cash / Accompanying Person) ============
+               Merged in from the former standalone "Bill Details - HC" wizard
+               stage — this dropdown swaps between the two HC-related grids
+               below instead of a separate top-level stage tab. Only one
+               section shows at a time; picking a different option swaps to
+               it. Two DOM variants of each grid exist (editable / read-only)
+               exactly as before, toggled by role via getHCStageReadOnly(). -->
+          <div class="card" id="card-medbilladditional">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 3h9l3 3v15H6z" />
+                  <path d="M9 8h6M9 12h6M9 16h4" />
+                </svg>
+                HC Details
+              </div>
+            </div>
+            <div class="field field--narrow u-mb-14">
+              <label for="bdAdditionalSectionSelect">Select section</label>
+              <select id="bdAdditionalSectionSelect">
+                <option value="hc">Hospital Daily Cash</option>
+                <option value="hcexp">Accompanying Person</option>
+              </select>
+            </div>
+
+            <!-- ============ Hospital Daily Cash (Read Only) ============ -->
+            <div id="card-medhc-ro">
+              <div class="table-card">
+                <div class="table-scroll">
+                  <table class="grid-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Type of Room</th>
+                        <th scope="col">No of Days</th>
+                        <th scope="col">Benefit Per Day</th>
+                        <th scope="col">Deduction</th>
+                        <th scope="col">Payable Amount</th>
+                        <th scope="col">Remarks</th>
+                      </tr>
+                    </thead>
+                    <tbody id="hcGridBodyRO"></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="summary-bar u-mt-14">
+                <div class="summary-col u-pl-16">
+                  <div class="summary-eyebrow">Total Claimed Amount</div>
+                  <div class="summary-main mono" id="hcTotalClaimedRO">0</div>
+                </div>
+                <div class="summary-col">
+                  <div class="summary-eyebrow">Total Deduction</div>
+                  <div class="summary-main mono" id="hcTotalDeductionRO">0</div>
+                </div>
+                <div class="summary-col">
+                  <div class="summary-eyebrow">Total Approved Amount</div>
+                  <div class="summary-main mono" id="hcTotalApprovedRO">0</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============ Expenses on Accompanying Person (Read Only) ============ -->
+            <div id="card-medhcexp-ro">
+              <div class="table-card">
+                <div class="table-scroll">
+                  <table class="grid-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Type of Room</th>
+                        <th scope="col">No of Days</th>
+                        <th scope="col">Benefit Per Day</th>
+                        <th scope="col">Deduction</th>
+                        <th scope="col">Payable Amount</th>
+                        <th scope="col">Remarks</th>
+                      </tr>
+                    </thead>
+                    <tbody id="hcExpGridBodyRO"></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="summary-bar u-mt-14">
+                <div class="summary-col u-pl-16">
+                  <div class="summary-eyebrow">Total Claimed Amount</div>
+                  <div class="summary-main mono" id="hcExpTotalClaimedRO">0</div>
+                </div>
+                <div class="summary-col">
+                  <div class="summary-eyebrow">Total Deduction</div>
+                  <div class="summary-main mono" id="hcExpTotalDeductionRO">0</div>
+                </div>
+                <div class="summary-col">
+                  <div class="summary-eyebrow">Total Approved Amount</div>
+                  <div class="summary-main mono" id="hcExpTotalApprovedRO">0</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============ Hospital Daily Cash ============ -->
+            <div id="card-medhc">
+              <div class="table-card u-mt-10">
+                <div class="table-scroll">
+                  <table class="grid-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Type of Room</th>
+                        <th scope="col">No of Days</th>
+                        <th scope="col">Benefit Per Day</th>
+                        <th scope="col">Deduction</th>
+                        <th scope="col">Payable Amount</th>
+                        <th scope="col">Remarks</th>
+                        <th scope="col"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="hcGridBody"></tbody>
+                  </table>
+                </div>
+                <div class="table-footer">
+                  <button class="btn btn-outline btn-sm" type="button" id="hcAddRowBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    Add Row
+                  </button>
+                </div>
+              </div>
+              <div class="summary-bar u-mt-14">
+                <div class="summary-col u-pl-16">
+                  <div class="summary-eyebrow">Total Claimed Amount</div>
+                  <div class="summary-main mono" id="hcTotalClaimed">0</div>
+                </div>
+                <div class="summary-col">
+                  <div class="summary-eyebrow">Total Deduction</div>
+                  <div class="summary-main mono" id="hcTotalDeduction">0</div>
+                </div>
+                <div class="summary-col">
+                  <div class="summary-eyebrow">Total Approved Amount</div>
+                  <div class="summary-main mono" id="hcTotalApproved">0</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============ Expenses on Accompanying Person ============ -->
+            <div id="card-medhcexp">
+              <div class="table-card">
+                <div class="table-scroll">
+                  <table class="grid-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Type of Room</th>
+                        <th scope="col">No of Days</th>
+                        <th scope="col">Benefit Per Day</th>
+                        <th scope="col">Deduction</th>
+                        <th scope="col">Payable Amount</th>
+                        <th scope="col">Remarks</th>
+                        <th scope="col"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="hcExpGridBody"></tbody>
+                  </table>
+                </div>
+                <div class="table-footer">
+                  <button class="btn btn-outline btn-sm" type="button" id="hcExpAddRowBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    Add Row
+                  </button>
+                </div>
+              </div>
+              <div class="summary-bar u-mt-14">
+                <div class="summary-col u-pl-16">
+                  <div class="summary-eyebrow">Total Claimed Amount</div>
+                  <div class="summary-main mono" id="hcExpTotalClaimed">0</div>
+                </div>
+                <div class="summary-col">
+                  <div class="summary-eyebrow">Total Deduction</div>
+                  <div class="summary-main mono" id="hcExpTotalDeduction">0</div>
+                </div>
+                <div class="summary-col">
+                  <div class="summary-eyebrow">Total Approved Amount</div>
+                  <div class="summary-main mono" id="hcExpTotalApproved">0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ CARD: Remarks (unified trail + add — combines the former
+               Bill Details and Bill Details - HC remarks into one) ============ -->
+          <div class="card" id="card-medremarks4">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                Remarks
+              </div>
+            </div>
+            <div class="remark-section hidden" id="card-userremarks4">
+              <div class="remark-section-label">All Remarks</div>
+              <div id="userRemarksBody4"></div>
+              <p class="hidden u-text-sm-muted" id="userRemarksEmpty4">No remarks from other users yet.</p>
+              <div class="table-footer hidden" id="userRemarksFooter4">
+                <div class="pgsize">
+                  Show
+                  <select id="userRemarksPageSize4">
+                    <option value="10" selected>10</option>
+                  </select>
+                  entries per page &nbsp;&middot;&nbsp; <span class="result-count" id="userRemarksResultCount4">0 results</span>
+                </div>
+                <div class="pager" id="userRemarksPager4"></div>
+              </div>
+            </div>
+            <div class="remark-add-box">
+              <div class="field">
+                <label for="remarksInput4">Add a remark for the next user</label>
+                <textarea rows="2" id="remarksInput4" placeholder="Type a note for whoever processes this claim next..."
+                  class="textarea-full"></textarea>
+              </div>
+              <button class="btn btn-primary btn-sm" id="remarksAddBtn4" type="button" class="u-mt-10">Save
+                Remark</button>
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- =========================================================== -->
+        <!-- STAGE 5: Settlement                                          -->
+        <!-- =========================================================== -->
+        <div id="medicoStage5" class="hidden">
+          <div class="card" id="card-medsettlement">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+                Settlement
+              </div>
+              <div class="u-flex-gap-10">
+                <span class="card-hint" id="stClaimNumber">Claim Number: —</span>
+              </div>
+            </div>
+
+            <div class="section-subhead u-mt-0 u-pt-0 u-border-top-none">Claims - Settlement Table Grid</div>
+            <div class="table-card table-card--no-shadow">
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Parameters</th>
+                      <th scope="col">Total Billed Amount</th>
+                      <th scope="col">Discount Amount</th>
+                      <th scope="col">Tariff Deduction Amount</th>
+                      <th scope="col">Deduction Amount</th>
+                      <th scope="col">Final Payable Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="strong">Health</td>
+                      <td class="mono">125080.70</td>
+                      <td class="mono">0</td>
+                      <td class="mono">0</td>
+                      <td class="mono">16401</td>
+                      <td class="mono">108679.70</td>
+                    </tr>
+                    <tr>
+                      <td class="strong">HospitalDailyCash</td>
+                      <td class="mono">0</td>
+                      <td class="mono">0</td>
+                      <td class="mono">0</td>
+                      <td class="mono">0</td>
+                      <td class="mono">0</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="summary-bar u-mt-12">
+              <div class="summary-col u-pl-16">
+                <div class="summary-eyebrow">Other Expenses</div>
+                <div class="summary-main mono">108680</div>
+              </div>
+              <div class="summary-col">
+                <div class="summary-eyebrow">Net Approved Amount</div>
+                <div class="summary-main mono">108680</div>
+              </div>
+            </div>
+
+            <div class="section-subhead">Deductions &amp; Co-payment</div>
+            <div class="field-grid">
+              <div class="field"><label for="stPolicyDeduction">Policy Deduction</label><input type="number" id="stPolicyDeduction" value="0">
+              </div>
+              <div class="field span2"><label for="stPolicyDeductionRemarks">Policy Deduction Remarks</label><input type="text"
+                  id="stPolicyDeductionRemarks"></div>
+              <div class="field">
+                <label for="stCoPayment">Co Payment</label>
+                <input type="number" id="stCoPayment" value="0">
+                <span class="card-hint">Co-payment percentage as per enrollment is: 0%</span>
+              </div>
+              <div class="field field--center-checkbox"><label class="checkbox-inline"><input type="checkbox"
+                    id="stEditCopayment">Edit Copayment</label></div>
+              <div class="field">
+                <label for="stCopayRemark">Copay Remark</label>
+                <textarea rows="2" id="stCopayRemark" class="textarea-full" disabled></textarea>
+                <span class="err-msg" id="stCopayRemark-err">Copay Remark is required.</span>
+              </div>
+              <div class="field">
+                <label for="stZonalCopayment">Zonal Copayment Amount</label>
+                <input type="number" id="stZonalCopayment" value="0" disabled>
+                <span class="card-hint">Zonal co-payment percentage as per enrollment is: 0%</span>
+              </div>
+              <div class="field field--center-checkbox"><label class="checkbox-inline"><input type="checkbox"
+                    id="stEditZonalCopayment">Edit Zonal Copayment</label></div>
+              <div class="field">
+                <label for="stZonalCopayRemark">Zonal Copay Remarks</label>
+                <textarea rows="2" id="stZonalCopayRemark" class="textarea-full" disabled></textarea>
+                <span class="err-msg" id="stZonalCopayRemark-err">Zonal Copay Remarks is required.</span>
+              </div>
+            </div>
+
+            <div class="section-subhead">GST Details</div>
+            <div class="field u-mb-14">
+              <label class="checkbox-inline"><input type="checkbox" id="stGstApplicableRoomRent">Is GST Applicable On
+                Room Rent?</label>
+            </div>
+            <div class="field-grid">
+              <div class="field"><label for="stHospitalGstin">Hospital GSTIN Number</label><input type="text" id="stHospitalGstin"></div>
+              <div class="field"><label for="stGstFromState">From State</label><input type="text" id="stGstFromState"></div>
+              <div class="field"><label for="stDummyGstin">ABC Ergo GSTIN Number</label><input type="text" id="stDummyGstin"></div>
+              <div class="field"><label for="stGstToState">To State</label><input type="text" id="stGstToState"></div>
+              <div class="field"><label for="stGstRoomRentAmount">GST applicable Room Rent amount</label><input type="number"
+                  id="stGstRoomRentAmount" value="0"></div>
+              <div class="field"><label for="stGstClaimedByHospital">GST Claimed By Hospital</label><input type="number" id="stGstClaimedByHospital"
+                  value="0"></div>
+              <div class="field span2">
+                <label>Total GST Calculated in HCS</label>
+                <div class="search-field-row">
+                  <input type="number" id="stTotalGstCalculated" value="0" disabled>
+                  <button class="btn btn-outline btn-sm" type="button" id="gstCalcOnBillsBtn">GST Calculation On
+                    Bills</button>
+                </div>
+              </div>
+              <div class="field"><label for="stFinalPayableGst">Final Payable GST</label><input type="number" id="stFinalPayableGst" value="0" disabled>
+              </div>
+              <div class="field"><label for="stRoomRentIgst">Room Rent IGST Amount</label><input type="number" id="stRoomRentIgst" value="0">
+              </div>
+              <div class="field"><label for="stRoomRentCgst">Room Rent CGST Amount</label><input type="number" id="stRoomRentCgst" value="0">
+              </div>
+              <div class="field"><label for="stRoomRentSgst">Room Rent SGST Amount</label><input type="number" id="stRoomRentSgst" value="0">
+              </div>
+              <div class="field"><label for="stGstInvoiceDate">GST Invoice Date</label><input type="date" id="stGstInvoiceDate"></div>
+              <div class="field"><label for="stGstDeductions">GST Deductions</label><input type="number" id="stGstDeductions" value="0"></div>
+              <div class="field field--center-checkbox"><label class="checkbox-inline"><input type="checkbox"
+                    id="stEditGstDeduction">Edit GST Deduction</label></div>
+              <div class="field"><label for="stGstDeductionRemarks">GST Deduction Remarks</label><input type="text" id="stGstDeductionRemarks">
+              </div>
+            </div>
+
+            <div class="section-subhead">Payable Amount Summary</div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="stTempGrossAmount">Temp Gross Amount</label>
+                <input type="number" id="stTempGrossAmount" value="108680">
+                <span class="card-hint">Formula: Net Approved Amount+GST - (Policy Deduction + Co payment+ Zonal
+                  Copayment Amount+Excess Co-payment Paid by Insured)</span>
+              </div>
+              <div class="field"><label for="stGrossIncGst">Gross Amount (Including GST)</label><input type="number" id="stGrossIncGst"
+                  value="108680"></div>
+              <div class="field">
+                <label for="stGrossExGst">Gross Amount (Excluding GST)</label>
+                <input type="number" id="stGrossExGst" value="108680">
+                <span class="card-hint">Formula: Gross Amount (Including GST) - Final Payable GST</span>
+              </div>
+              <div class="field"><label for="stPremiumRecovery">Premium Recovery</label><input type="number" id="stPremiumRecovery" value="0">
+              </div>
+              <div class="field">
+                <label for="stTdsAmount">TDS Amount</label>
+                <input type="number" id="stTdsAmount" value="0">
+                <span class="card-hint">TDS is calculated on (Gross Amount(Excluding GST) - Premium Recovery)</span>
+              </div>
+              <div class="field">
+                <label for="stNetPayableExGst">Net Payable Amount (Excluding GST)</label>
+                <input type="number" id="stNetPayableExGst" value="108680">
+                <span class="card-hint">Formula: Gross Amount (Excluding GST) - Premium Recovery - TDS Amount</span>
+              </div>
+              <div class="field">
+                <label for="stNetPayableIncGst">Net Payable Amount (Including GST)</label>
+                <input type="number" id="stNetPayableIncGst" value="108680">
+                <span class="card-hint">Formula: (Gross Amount (Excluding GST) - Premium Recovery - TDS + GST Amount)</span>
+              </div>
+            </div>
+            <div class="u-mt-14">
+              <button class="btn btn-full-red" id="settlementCalculateBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M5 12h14" />
+                  <path d="M12 5l7 7-7 7" />
+                </svg>
+                Calculate
+              </button>
+            </div>
+
+            <div class="section-subhead">Case Processing &amp; Status</div>
+            <div class="field">
+              <label>Any Other Cost/Expenses</label>
+              <div class="radio-inline-group">
+                <label class="radio-inline"><input type="radio" name="stOtherCost" id="stOtherCostNo" value="No"
+                    checked>No</label>
+                <label class="radio-inline"><input type="radio" name="stOtherCost" id="stOtherCostYes"
+                    value="Yes">Yes</label>
+              </div>
+            </div>
+
+            <div class="field-grid">
+              <div class="field"><label for="stLastDocDate">Last Document Received Date / Re-Open Date</label><input type="date"
+                  id="stLastDocDate"></div>
+              <div class="field"><label for="stTatDays">TAT Days</label><input type="number" id="stTatDays" value="0"></div>
+              <div class="field">
+                <label for="stRbiRate">RBI Bank Rate (Inclusive 2%)</label>
+                <input type="text" id="stRbiRate" value="7.50 %">
+                <span class="card-hint">Formula: RBI Bank Rate + 2%</span>
+              </div>
+              <div class="field"><label for="stPenalInterest">Penal Interest</label><input type="number" id="stPenalInterest" value="0"></div>
+            </div>
+
+            <div class="field">
+              <label>Claim Payment Status</label>
+              <div class="radio-inline-group">
+                <label class="radio-inline"><input type="radio" name="stPaymentStatus" id="stPaymentStatusOnAccount"
+                    value="On Account" checked>On Account</label>
+                <label class="radio-inline"><input type="radio" name="stPaymentStatus" id="stPaymentStatusFinal"
+                    value="Final Payment">Final Payment</label>
+              </div>
+            </div>
+
+            <div class="field-grid">
+              <div class="field" id="stNeftAccountNoField">
+                <label for="stNeftAccountNo">Confirm NEFT Account Number <span class="req">*</span></label>
+                <input type="text" id="stNeftAccountNo" inputmode="numeric" maxlength="18" placeholder="Enter NEFT Account Number">
+                <span class="err-msg" id="stNeftAccountNo-err">NEFT Account Number is required.</span>
+              </div>
+            </div>
+
+            <div class="field-grid">
+              <div class="field">
+                <label for="stClaimStatus">Claim Status</label>
+                <select id="stClaimStatus">
+                  <option value="" disabled>--Select--</option>
+                  <option value="Approve">Approve</option>
+                  <option value="Deny" selected>Deny</option>
+                  <option value="Expert Opinion">Expert Opinion</option>
+                  <option value="Query">Query</option>
+                  <option value="Send Back to NSP">Send Back to NSP</option>
+                  <option value="Send back for correction">Send back for correction</option>
+                  <option value="Send back to Scan User">Send back to Scan User</option>
+                  <option value="Send case to CMO for grade update">Send case to CMO for grade update</option>
+                  <option value="Send case to RLMU for Grade update">Send case to RLMU for Grade update</option>
+                  <option value="Send for Investigation">Send for Investigation</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="stMedicoRemarksReasonTrigger">Medico Remarks / Excluded Approval Reason</label>
+                <select id="stMedicoRemarksReason" multiple class="ms-native-store" aria-hidden="true" tabindex="-1"></select>
+                <div class="ms-dropdown" id="stMedicoRemarksReasonWidget">
+                  <button type="button" class="ms-trigger" id="stMedicoRemarksReasonTrigger" aria-haspopup="listbox"
+                    aria-expanded="false">
+                    <span class="ms-trigger-text" id="stMedicoRemarksReasonTriggerText">--Select--</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ms-trigger-caret">
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </button>
+                  <div class="ms-panel" id="stMedicoRemarksReasonPanel" role="listbox" aria-multiselectable="true" hidden>
+                    <p class="ms-empty" id="stMedicoRemarksReasonEmpty">Select a Claim Status of Query or Deny to see
+                      applicable reasons.</p>
+                    <div class="ms-option-list" id="stMedicoRemarksReasonOptions"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="stMedicoOpinion">Medico Opinion</label>
+              <textarea rows="3" id="stMedicoOpinion"
+                class="textarea-full">1.Treating doctor's certificate for exact duration of the Hypertension in DD/MM/YYYY format along with past consultation papers and treatment records.</textarea>
+            </div>
+
+            <div class="field-grid">
+              <div class="field">
+                <label for="stStatusNonMedico">Status (Non Medico)</label>
+                <select id="stStatusNonMedico">
+                  <option value="" disabled selected>--Select--</option>
+                  <option value="Submitted to Medico TL">Submitted to Medico TL</option>
+                  <option value="Pending">Pending</option>
+                </select>
+              </div>
+              <div class="field"><label for="stPaymentMode">Payment Mode</label><input type="text" id="stPaymentMode"></div>
+            </div>
+
+            <div class="override-group">
+              <fieldset class="field-fieldset override-fieldset">
+                <legend>Processing Checkboxes <span class="card-hint">Workflow-impacting — Medico only</span></legend>
+                <div class="override-chip-grid">
+                  <label class="override-chip"><input type="checkbox" id="stOverrideValidation"><span>Override
+                      Validation</span></label>
+                  <label class="override-chip"><input type="checkbox" id="stSendForInvestigation"><span>Send for
+                      Investigation</span></label>
+                  <label class="override-chip"><input type="checkbox"
+                      id="stOverrideHospitalizationPeriod"><span>Override hospitalization period</span></label>
+                  <label class="override-chip"><input type="checkbox" id="stReprocessApproval"><span>Reprocess
+                      Approval</span></label>
+                  <label class="override-chip"><input type="checkbox" id="stReimbursementSiAccident"><span>Reimbursement
+                      SI due to Accident</span></label>
+                  <label class="override-chip"><input type="checkbox" id="stDeviationApproval"><span>Deviation
+                      Approval</span></label>
+                  <label class="override-chip"><input type="checkbox" id="stNonDisclosure"><span>Non Disclosure</span></label>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="field">
+              <label for="stNonMedicoTLRemark">Non Medico TL Remark</label>
+              <textarea rows="3" id="stNonMedicoTLRemark" class="textarea-full"
+                placeholder="Note for the Non Medico TL reviewing this submission..."></textarea>
+            </div>
+
+            <div class="view-remarks-row">
+              <a href="#" id="viewAllRemarksLink" class="view-remarks-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                View All Remarks
+              </a>
+            </div>
+
+            <div class="section-subhead" id="stMedicoTLRemarkHeading">Processing Remarks</div>
+            <div class="field">
+              <label for="stMedicoTLRemark">Medico TL Remark</label>
+              <textarea rows="3" id="stMedicoTLRemark" class="textarea-full"></textarea>
+            </div>
+
+          </div>
+
+          <!-- =========================================================== -->
+          <!-- PENNY DROP SUMMARY CARD (Payment Auditor only, Reimbursement -->
+          <!-- claims only — read-only outcome of the Basic Details Penny  -->
+          <!-- Drop section, which Payment Auditor has no access to)      -->
+          <!-- =========================================================== -->
+          <div class="card hidden" id="card-pennydropsummary">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 11l3 3L22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                </svg>
+                Penny Drop Summary
+              </div>
+            </div>
+            <div class="field-grid">
+              <div class="field"><label for="pdsVerificationStatus">Penny Drop Verification Status</label><input type="text" id="pdsVerificationStatus" disabled></div>
+              <div class="field"><label for="pdsVerifiedBy">Verified By</label><input type="text" id="pdsVerifiedBy" disabled></div>
+              <div class="field"><label for="pdsBypassedBy">Bypassed By</label><input type="text" id="pdsBypassedBy" disabled></div>
+              <div class="field"><label for="pdsBypassReason">Bypass Reason</label><input type="text" id="pdsBypassReason" disabled></div>
+              <div class="field span2"><label for="pdsBypassRemarks">Bypass Remarks</label><textarea rows="2" id="pdsBypassRemarks" class="textarea-full" disabled></textarea></div>
+            </div>
+          </div>
+
+          <!-- =========================================================== -->
+          <!-- PAYMENT AUDITOR DECISION CARD (Payment Auditor only)        -->
+          <!-- Mutually exclusive with the High-Value Email Approval card. -->
+          <!-- =========================================================== -->
+          <div class="card hidden" id="paDecisionSection">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 12l2 2 4-4" />
+                  <circle cx="12" cy="12" r="9" />
+                </svg>
+                Payment Auditor Decision
+              </div>
+            </div>
+            <div class="field-grid">
+              <div class="field" id="paDecisionStatusField">
+                <label for="paDecisionStatus">Select Status</label>
+                <select id="paDecisionStatus">
+                  <option value="" disabled selected>--Select--</option>
+                  <option value="Approve">Approve</option>
+                  <option value="Reject">Reject</option>
+                </select>
+                <span class="err-msg" id="paDecisionStatus-err">Select Status is required.</span>
+              </div>
+              <div class="field span2"><label for="paDecisionRemark">Remark</label><textarea rows="3" id="paDecisionRemark" class="textarea-full" placeholder="Enter remark for this decision..."></textarea></div>
+            </div>
+          </div>
+
+          <!-- =========================================================== -->
+          <!-- HIGH-VALUE EMAIL APPROVAL CARD (Payment Auditor only)       -->
+          <!-- Replaces the Payment Auditor Decision card when the claim   -->
+          <!-- is a high-value Priority Claim (see isEmailApprovalEligible)-->
+          <!-- =========================================================== -->
+          <div class="card hidden" id="paEmailApprovalSection">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+                High-Value Approval Requisition
+              </div>
+            </div>
+            <div class="field-grid">
+              <div class="field"><label for="paEmailPriorityReason">Priority Reason</label><input type="text" id="paEmailPriorityReason" disabled></div>
+              <div class="field"><label for="paEmailSumInsured">Sum Insured (Claim Amount)</label><input type="text" id="paEmailSumInsured" disabled></div>
+              <div class="field"><label for="paEmailApprovalSlab">Approval Matrix Slab</label><input type="text" id="paEmailApprovalSlab" disabled></div>
+            </div>
+            <div class="field-grid">
+              <div class="field" id="paEmailStatusField">
+                <label for="paEmailStatus">Select Status</label>
+                <select id="paEmailStatus">
+                  <option value="" disabled selected>--Select--</option>
+                  <option value="Approve">Approve</option>
+                  <option value="Reject">Reject</option>
+                </select>
+                <span class="err-msg" id="paEmailStatus-err">Select Status is required.</span>
+              </div>
+              <div class="field span2"><label for="paEmailRemark">Remark</label><textarea rows="3" id="paEmailRemark" class="textarea-full" placeholder="Enter remark for this decision..."></textarea></div>
+            </div>
+          </div>
+
+          <!-- ============ CARD: QC Checklist ============ -->
+          <div class="card" id="card-qcchecklist">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 11l3 3L22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                </svg>
+                QC Checklist
+              </div>
+            </div>
+
+            <div class="table-card table-card--no-shadow">
+              <div class="table-scroll">
+                <table id="qcChecklistTable">
+                  <thead>
+                    <tr>
+                      <th scope="col" style="width:44%">Checklist Item</th>
+                      <th scope="col" style="width:16%">Response</th>
+                      <th scope="col">Remarks</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Row 1 -->
+                    <tr>
+                      <td>Are the patient name and hospital details mapped correctly?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl01" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl01" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl01Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 2 -->
+                    <tr>
+                      <td>Is the ailment name correct as per claim request?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl02" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl02" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl02Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 3 -->
+                    <tr>
+                      <td>Is the ICD code correct as per claim request?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl03" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl03" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl03Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 4 -->
+                    <tr>
+                      <td>Is the procedure name correct as per claim request?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl04" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl04" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl04Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 5 -->
+                    <tr>
+                      <td>Is the room/stay category as per policy t and c checked?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl05" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl05" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl05Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 6 -->
+                    <tr>
+                      <td>Is package (medical/surgical) correctly applied?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl06" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl06" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl06Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 7 -->
+                    <tr>
+                      <td>Is policy ported and waiting period waived off?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl07" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl07" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl07Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 8 -->
+                    <tr>
+                      <td>Is 30 day waiting period applicable and not an accidental case?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl08" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl08" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl08Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 9 -->
+                    <tr>
+                      <td>Is 2 year waiting period applicable?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl09" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl09" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl09Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 10 -->
+                    <tr>
+                      <td>Is standard exclusion applicable on procedure/ailment?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl10" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl10" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl10Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 11 -->
+                    <tr>
+                      <td>Are past claim history details verified?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl11" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl11" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl11Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 12 -->
+                    <tr>
+                      <td>Are FWA investigation remarks checked if applicable?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl12" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl12" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl12Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 13 -->
+                    <tr>
+                      <td>Any active PED and/or non-disclosure applicable?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl13" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl13" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl13Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 14 -->
+                    <tr>
+                      <td>Is policy deductible met?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl14" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl14" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl14Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 15 -->
+                    <tr>
+                      <td>Is Co-payment correctly applied?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl15" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl15" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl15Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 16 -->
+                    <tr>
+                      <td>Is the restore/unlimited restored amount approved correct?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl16" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl16" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl16Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 17 -->
+                    <tr>
+                      <td>Unlimited restore amount applicable and checked?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl17" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl17" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl17Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 18 -->
+                    <tr>
+                      <td>Approved amount checked with the estimate?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl18" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl18" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl18Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 19 -->
+                    <tr>
+                      <td>Negotiation amount and discounts checked at approval?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl19" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl19" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl19Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                    <!-- Row 20 -->
+                    <tr>
+                      <td>Recommend for investigation?</td>
+                      <td>
+                        <div class="radio-inline-group">
+                          <label class="radio-inline"><input type="radio" name="qcCl20" value="Yes">Yes</label>
+                          <label class="radio-inline"><input type="radio" name="qcCl20" value="No">No</label>
+                        </div>
+                      </td>
+                      <td><textarea rows="2" id="qcCl20Remark" class="textarea-full" placeholder="Enter Remarks"></textarea></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="section-subhead">Opinions &amp; Status</div>
+            <div class="field-grid">
+              <!-- Auditor Opinion — Editable -->
+              <div class="field">
+                <label for="qcAuditorOpinion">Auditor Opinion</label>
+                <select id="qcAuditorOpinion">
+                  <option value="" disabled selected>--Select--</option>
+                  <option value="Agree">Agree</option>
+                  <option value="Disagree">Disagree</option>
+                  <option value="Partially Agree">Partially Agree</option>
+                  <option value="Recommend Investigation">Recommend Investigation</option>
+                </select>
+              </div>
+              <!-- CEM Opinion — Read Only (NA) -->
+              <div class="field">
+                <label for="qcCemOpinion">CEM Opinion</label>
+                <select id="qcCemOpinion" disabled>
+                  <option value="" selected>N/A</option>
+                  <option value="Agree">Agree</option>
+                  <option value="Disagree">Disagree</option>
+                  <option value="Partially Agree">Partially Agree</option>
+                  <option value="Recommend Investigation">Recommend Investigation</option>
+                </select>
+              </div>
+              <!-- CMO Opinion — Read Only (NA) -->
+              <div class="field">
+                <label for="qcCmoOpinion">CMO Opinion</label>
+                <select id="qcCmoOpinion" disabled>
+                  <option value="" selected>N/A</option>
+                  <option value="Agree">Agree</option>
+                  <option value="Disagree">Disagree</option>
+                  <option value="Partially Agree">Partially Agree</option>
+                  <option value="Recommend Investigation">Recommend Investigation</option>
+                </select>
+              </div>
+              <!-- Status (Non Medico) — Read Only -->
+              <div class="field">
+                <label for="qcStatusNonMedico">Status (Non Medico)</label>
+                <select id="qcStatusNonMedico" disabled>
+                  <option value="" disabled selected>--Select--</option>
+                  <option value="Submitted to Medico TL">Submitted to Medico TL</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
+              <!-- Payment Mode — Read Only -->
+              <div class="field">
+                <label for="qcPaymentModeChecklist">Payment Mode</label>
+                <select id="qcPaymentModeChecklist" disabled>
+                  <option value="" disabled selected>--Select--</option>
+                  <option value="NEFT">NEFT</option>
+                  <option value="Cheque">Cheque</option>
+                  <option value="RTGS">RTGS</option>
+                </select>
+              </div>
+              <!-- NEFT Details — Read Only -->
+              <div class="field span2">
+                <label for="qcNeftDetailsChecklist">NEFT Details</label>
+                <textarea rows="2" id="qcNeftDetailsChecklist" class="textarea-full" disabled placeholder="Auto-populated from payment details"></textarea>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- =========================================================== -->
+          <!-- QC COMMUNICATION CARD (visible for QC role only)            -->
+          <!-- Grid follows the same data-backed row pattern as Hospital   -->
+          <!-- Daily Cash (card-medhc / renderHCGrid) — rows live on       -->
+          <!-- rec.qcCommRows and are re-rendered from data, table carries -->
+          <!-- .grid-table, Add Row sits in a .table-footer below the      -->
+          <!-- table, and the remove button uses the shared               -->
+          <!-- .row-remove-btn/data-remove-row convention (disabled        -->
+          <!-- rather than alert()-blocked when only one row remains).    -->
+          <!-- =========================================================== -->
+          <div class="card hidden" id="card-qcCommunication">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+                Communication
+              </div>
+            </div>
+
+            <div class="table-card u-mt-10">
+              <div class="table-scroll">
+                <table class="grid-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Mode of Communication</th>
+                      <th scope="col">Recipient</th>
+                      <th scope="col">Communication Details</th>
+                      <th scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="qcCommGridBody"></tbody>
+                </table>
+              </div>
+              <div class="table-footer">
+                <button class="btn btn-outline btn-sm" type="button" id="qcCommAddRowBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                  Add Row
+                </button>
+              </div>
+            </div>
+
+            <div class="u-flex-gap-10-mt-12">
+              <button class="btn btn-primary" id="qcCommSendBtn" type="button">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 2L11 13" />
+                  <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+                </svg>
+                Send
+              </button>
+            </div>
+          </div>
+
+          <!-- ============ CARD: Remarks (unified trail + add) ============ -->
+          <div class="card" id="card-medremarks5">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                Remarks
+              </div>
+            </div>
+            <div class="remark-section hidden" id="card-userremarks5">
+              <div class="remark-section-label">All Remarks</div>
+              <div id="userRemarksBody5"></div>
+              <p class="hidden u-text-sm-muted" id="userRemarksEmpty5">No remarks from other users yet.</p>
+              <div class="table-footer hidden" id="userRemarksFooter5">
+                <div class="pgsize">
+                  Show
+                  <select id="userRemarksPageSize5">
+                    <option value="10" selected>10</option>
+                  </select>
+                  entries per page &nbsp;&middot;&nbsp; <span class="result-count" id="userRemarksResultCount5">0 results</span>
+                </div>
+                <div class="pager" id="userRemarksPager5"></div>
+              </div>
+            </div>
+            <div class="remark-add-box">
+              <div class="field">
+                <label for="remarksInput5">Add a remark for the next user</label>
+                <textarea rows="2" id="remarksInput5" placeholder="Type a note for whoever processes this claim next..."
+                  class="textarea-full"></textarea>
+              </div>
+              <button class="btn btn-primary btn-sm" id="remarksAddBtn5" type="button" class="u-mt-10">Save
+                Remark</button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+      <div class="medico-bottom-bar hidden" id="medicoBottomBar">
+        <button class="btn btn-outline" id="medicoPrevBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M19 12H5" />
+            <path d="M12 19l-7-7 7-7" />
+          </svg>
+          Previous
+        </button>
+        <div class="medico-quick-links" role="group" aria-label="Quick reference links">
+          <button class="quick-link-btn" id="quickLinkProposalPPC" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+              <path d="M14 3v6h6" />
+            </svg>
+            <span>Proposal/PPC</span>
+          </button>
+          <button class="quick-link-btn" id="quickLinkHospital360" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
+              <path
+                d="m480-120-58-52q-101-91-167-157T150-447.5Q111-500 95.5-544T80-634q0-94 63-157t157-63q52 0 99 22t81 62q34-40 81-62t99-22q94 0 157 63t63 157q0 46-15.5 90T810-447.5Q771-395 705-329T538-172l-58 52Zm0-108q96-86 158-147.5t98-107q36-45.5 50-81t14-70.5q0-60-40-100t-100-40q-47 0-87 26.5T518-680h-76q-15-41-55-67.5T300-774q-60 0-100 40t-40 100q0 35 14 70.5t50 81q36 45.5 98 107T480-228Zm0-273Z" />
+            </svg>
+            <span>Hospital 360</span>
+          </button>
+          <button class="quick-link-btn" id="quickLinkPrevPolicy" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+              <path d="M3 3v5h5" />
+              <path d="M12 7v5l3 3" />
+            </svg>
+            <span>Previous Policy Details</span>
+          </button>
+          <button class="quick-link-btn" id="quickLinkServiceCentral" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 16.5a2 2 0 0 1-2 2H6.5L4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z" />
+              <path d="M8 9h8M8 13h5" />
+            </svg>
+            <span>Service Central</span>
+          </button>
+          <button class="quick-link-btn" id="quickLinkMoveTL" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 20h5v-2a3 3 0 0 0-5.356-1.857" />
+              <path d="M9 20H4v-2a3 3 0 0 1 5.356-1.857" />
+              <circle cx="12" cy="7" r="4" />
+              <path d="M12 11v4" />
+              <path d="M15 14l-3 3-3-3" />
+            </svg>
+            <span>Move TL</span>
+          </button>
+        </div>
+        <div class="u-flex-gap-10">
+          <button class="btn btn-outline" id="medicoCloseBtn" type="button">Close</button>
+          <button class="btn btn-outline" id="medicoSaveDraftBtn" type="button">Save Draft</button>
+          <button class="btn btn-full-red" id="medicoNextBtn" type="button">
+            Next
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M5 12h14" />
+              <path d="M12 5l7 7-7 7" />
+            </svg>
+          </button>
+          <button class="btn btn-full-red hidden" id="medicoSubmitBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+            Submit
+          </button>
+          <button class="btn btn-full-red hidden" id="medicoDecisionBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M9 12l2 2 4-4" />
+              <circle cx="12" cy="12" r="9" />
+            </svg>
+            Claim Decision
+          </button>
+          <!-- QC Decision buttons -->
+          <button class="btn btn-full-red hidden" id="qcDecisionBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M9 12l2 2 4-4" />
+              <circle cx="12" cy="12" r="9" />
+            </svg>
+            Claim Decision
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- =========================================================== -->
+  <!-- VIEW: ADD PAYMENT (full screen, Non Medico)                  -->
+  <!-- =========================================================== -->
+  <div id="viewAddPayment" class="hidden view-padded">
+
+    <button class="back-arrow-btn" id="backFromAddPaymentBtn" type="button" aria-label="Back to Claim Processing">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5" /><path d="M12 19l-7-7 7-7" />
+      </svg>
+      Back
+    </button>
+
+    <div class="step-head">
+      <div>
+        <h1>Add Payment Details</h1>
+        <p>Enter the payee and bank details for this claim, then verify against existing records before saving.
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <path d="M2 10h20" />
+          </svg>
+          Payment Information
+        </div>
+      </div>
+
+      <div class="section-subhead">Payee Details</div>
+      <div class="field-grid">
+        <div class="field"><label for="fsPayeeName">Payee Name <span class="req">*</span></label><input type="text" id="fsPayeeName" placeholder="Enter Payee Name">
+        </div>
+        <div class="field">
+          <label for="fsPaymentMode">Payment Mode</label>
+          <select id="fsPaymentMode">
+            <option value="NEFT">NEFT</option>
+            <option value="RTGS">RTGS</option>
+            <option value="Cheque">Cheque</option>
+            <option value="UPI">UPI</option>
+          </select>
+        </div>
+        <div class="field"><label for="fsPanNo">PAN No</label><input type="text" id="fsPanNo" placeholder="Enter PAN No"></div>
+        <div class="field"><label for="fsEmailId">Email ID</label><input type="email" id="fsEmailId" placeholder="Enter Email ID"></div>
+      </div>
+
+      <div class="section-subhead">Bank Details</div>
+      <div class="field-grid">
+        <div class="field">
+          <label for="fsAccountNo">Account No <span class="req">*</span></label>
+          <input type="text" id="fsAccountNo" placeholder="Enter Account No" inputmode="numeric" pattern="[0-9]*">
+        </div>
+        <div class="field">
+          <label for="fsAccountType">Account Type</label>
+          <select id="fsAccountType">
+            <option value="Savings">Savings</option>
+            <option value="Current">Current</option>
+          </select>
+        </div>
+        <div class="field"><label for="fsBankName">Bank Name</label><input type="text" id="fsBankName" placeholder="Enter Bank Name"></div>
+        <div class="field"><label for="fsBranchName">Branch Name</label><input type="text" id="fsBranchName" placeholder="Enter Branch Name"></div>
+        <div class="field"><label for="fsIfscCode">IFSC Code</label><input type="text" id="fsIfscCode" placeholder="Enter IFSC Code"></div>
+        <div class="field"><label for="fsNeftCode">NEFT Code</label><input type="text" id="fsNeftCode" placeholder="Enter NEFT Code"></div>
+        <div class="field span3"><label for="fsNeftRemark">NEFT Remark</label><textarea rows="3" id="fsNeftRemark" placeholder="Enter NEFT Remark" class="textarea-full"></textarea></div>
+      </div>
+
+      <div class="section-subhead">Verification</div>
+      <div id="fsVerifyRecordsCards"></div>
+      <div class="tag-group-divider">
+        <button class="btn btn-outline u-text-blue" type="button" id="fsVerifyWithRecordsBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="u-icon-sm">
+            <circle cx="11" cy="11" r="7" />
+            <path d="M21 21l-4.3-4.3" />
+          </svg>
+          Verify with Existing Records
+        </button>
+        <span id="fsVerifyResult" class="field-note--danger"></span>
+      </div>
+    </div>
+
+    <div class="action-bar action-bar--fixed">
+      <div class="action-left">
+        <button class="btn btn-outline" id="fsPaymentCancelBtn" type="button">Cancel</button>
+      </div>
+      <div class="action-right">
+        <button class="btn btn-full-red" id="fsPaymentSaveBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M20 6L9 17l-5-5" />
+          </svg>
+          Save Payment
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="viewPharmacyDetails" class="hidden view-padded" role="main">
+
+      <div class="step-head">
+        <div>
+          <button class="back-arrow-btn" id="backToBillFromPharmacyBtn" type="button" aria-label="Back to Bill Details">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5" /><path d="M12 19l-7-7 7-7" />
+            </svg>
+            Back
+          </button>
+          <h1 id="pharmacyPageTitle">Pharmacy Bill Details</h1>
+          <p>Review and edit the medicine-wise breakdown for this claim. All fields are editable.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+              <path d="M14 3v6h6" />
+            </svg>
+            Pharmacy Breakdown
+          </div>
+        </div>
+        <div class="table-card table-card--no-shadow">
+          <div class="table-scroll">
+            <table class="grid-table grid-table--wrap-header">
+              <thead>
+                <tr>
+                  <th scope="col">Bill No</th>
+                  <th scope="col">Bill Date</th>
+                  <th scope="col">Medicine Name</th>
+                  <th scope="col">Units</th>
+                  <th scope="col">Amount/Unit</th>
+                  <th scope="col">Claimed Amt</th>
+                  <th scope="col">Deduction Amt</th>
+                  <th scope="col">Disc as per Tariff</th>
+                  <th scope="col">Disc Value</th>
+                  <th scope="col">Deduction Remarks</th>
+                  <th scope="col">Bill Remarks</th>
+                  <th scope="col">Approved Amount</th>
+                  <th scope="col">Bill Category</th>
+                  <th scope="col" class="col-sticky-action"></th>
+                </tr>
+              </thead>
+              <tbody id="pharmacyRowsBody"></tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <button class="btn btn-outline btn-sm" type="button" id="pharmacyAddRowBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Add Row
+            </button>
+          </div>
+        </div>
+
+        <div class="summary-bar">
+          <div class="summary-col u-pl-16">
+            <div class="summary-eyebrow">Total Claimed</div>
+            <div class="summary-main mono" id="pharmacyTotalClaimed">0</div>
+          </div>
+          <div class="summary-col">
+            <div class="summary-eyebrow">Total Deduction</div>
+            <div class="summary-main mono" id="pharmacyTotalDeduction">0</div>
+          </div>
+          <div class="summary-col">
+            <div class="summary-eyebrow">Total Approved</div>
+            <div class="summary-main mono" id="pharmacyTotalApproved">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-bar action-bar--fixed">
+        <div class="action-left">
+          <button class="btn btn-outline" id="pharmacyBackBtn2" type="button">Cancel</button>
+        </div>
+        <div class="action-right">
+          <button class="btn btn-outline" id="pharmacyCalculateBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M5 12h14" />
+              <path d="M12 5l7 7-7 7" />
+            </svg>
+            Calculate
+          </button>
+          <button class="btn btn-full-red" id="pharmacySaveBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+            Save Pharmacy Details
+          </button>
+        </div>
+      </div>
+
+  </div>
+
+  <!-- ===================== INLINE DOCUMENT VIEWER (guaranteed fallback, no pop-up permission needed) ===================== -->
+  <div id="docViewerOverlay" class="fullscreen-overlay">
+    <div class="infobox--header">
+      <span id="docViewerTitle" class="u-text-lg-bold">Document Viewer</span>
+      <button id="docViewerNewTabBtn" type="button" class="btn-outline-auto">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+          <path d="M15 3h6v6" />
+          <path d="M10 14L21 3" />
+        </svg>
+        Open in New Tab
+      </button>
+      <button id="docViewerCloseBtn" type="button" class="quick-action-btn">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+        Close
+      </button>
+    </div>
+    <iframe id="docViewerFrame" class="iframe-fill"></iframe>
+  </div>
+
+  <!-- ===================== DOCUMENT PREVIEW MODAL ===================== -->
+  <div class="modal-backdrop" id="docPreviewModal">
+    <div class="modal u-w-560" role="dialog" aria-modal="true" aria-labelledby="docPreviewTitle">
+      <div class="u-flex-between-mb-16">
+        <div>
+          <h2 class="u-mb-2" id="docPreviewTitle">Document</h2>
+          <p class="u-text-sm-muted-plain" id="docPreviewMeta">-</p>
+        </div>
+        <button class="icon-btn" id="docPreviewCloseX" type="button" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      </div>
+      <div id="docPreviewBody"></div>
+      <div class="modal-actions" class="u-mt-20">
+        <button class="btn btn-outline" id="docPreviewCloseBtn" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SUCCESS MODAL ===================== -->
+  <div class="modal-backdrop" id="successModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4">
+          <path d="M20 6L9 17l-5-5" />
+        </svg>
+      </div>
+      <h2 id="successTitle">Claim Intimation Submitted</h2>
+      <p id="successSub"></p>
+      <div class="inward-no" id="modalInwardNo"></div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="modalViewBtn" type="button">View in Claim List</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== ADD PAYMENT MODAL ===================== -->
+  <div class="modal-backdrop" id="paymentModal">
+    <div class="modal u-text-left" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
+      <div class="u-flex-between-mb-14">
+        <div>
+          <h2 class="u-mb-2" id="paymentModalTitle">Add Payment</h2>
+          <p class="u-text-sm-muted-plain">Select an existing payee, or enter new payment
+            details below.</p>
+        </div>
+        <button class="icon-btn" id="paymentModalCloseX" type="button" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="card-hint" class="u-mb-8">Existing payees on record</div>
+      <div class="assign-user-list" id="existingPayeeList" class="u-mb-18"></div>
+
+      <div class="card-hint" class="u-mb-8">Or enter new payment details</div>
+      <div class="field-grid two">
+        <div class="field"><label for="pmNeftCode">NEFT Code</label><input type="text" id="pmNeftCode"></div>
+        <div class="field">
+          <label for="pmPaymentMode">Payment Mode</label>
+          <select id="pmPaymentMode">
+            <option value="NEFT">NEFT</option>
+            <option value="RTGS">RTGS</option>
+            <option value="Cheque">Cheque</option>
+            <option value="UPI">UPI</option>
+          </select>
+        </div>
+        <div class="field"><label for="pmPayeeName">Payee Name</label><input type="text" id="pmPayeeName"></div>
+        <div class="field">
+          <label for="pmAccountNo">Account No</label>
+          <input type="text" id="pmAccountNo" inputmode="numeric" pattern="[0-9]*">
+        </div>
+        <div class="field">
+          <label for="pmAccountType">Account Type</label>
+          <select id="pmAccountType">
+            <option value="Savings">Savings</option>
+            <option value="Current">Current</option>
+          </select>
+        </div>
+        <div class="field"><label for="pmBankName">Bank Name</label><input type="text" id="pmBankName"></div>
+        <div class="field"><label for="pmBranchName">Branch Name</label><input type="text" id="pmBranchName"></div>
+        <div class="field"><label for="pmIfscCode">IFSC Code</label><input type="text" id="pmIfscCode"></div>
+        <div class="field"><label for="pmPanNo">PAN No</label><input type="text" id="pmPanNo"></div>
+        <div class="field"><label for="pmEmailId">Email ID</label><input type="email" id="pmEmailId"></div>
+      </div>
+
+      <div class="u-mt-14 u-pt-14-border">
+        <div id="verifyRecordsCards"></div>
+        <div class="verify-status-row">
+          <button class="btn btn-outline" type="button" id="verifyWithRecordsBtn" class="btn-outline-full-blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="u-icon-sm">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+            </svg>
+            Verify with Existing Records
+          </button>
+          <span id="verifyRecordsResult" class="field-note"></span>
+        </div>
+      </div>
+      <div class="modal-actions" class="u-mt-14">
+        <button class="btn btn-outline" id="paymentModalCancelBtn" type="button">Cancel</button>
+        <button class="btn btn-primary" id="paymentModalSaveBtn" type="button">Save Payment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== CLAIM DECISION MODAL (Medico) ===================== -->
+  <div class="modal-backdrop" id="decisionModal">
+    <div class="modal u-w-480" role="dialog" aria-modal="true" aria-labelledby="decisionModalTitle">
+      <h2 class="u-text-center" id="decisionModalTitle">Claim Decision</h2>
+      <p class="u-text-center-muted u-mb-16">Record the medical decision
+        for this claim.</p>
+
+      <div class="assign-user-list" class="u-mb-14" id="decisionOptionList">
+        <label class="assign-option" data-value="Approved">
+          <input type="radio" name="claimDecision" value="Approved">
+          <span class="assign-avatar" class="btn-gradient-success">OK</span>
+          <span class="assign-name">Approve</span>
+        </label>
+        <label class="assign-option" data-value="Rejected">
+          <input type="radio" name="claimDecision" value="Rejected">
+          <span class="assign-avatar" class="btn-gradient-danger">RJ</span>
+          <span class="assign-name">Reject</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label>Remarks <span class="opt">(optional)</span></label>
+        <textarea rows="2" id="decisionRemarks" class="textarea-full"></textarea>
+      </div>
+
+      <div class="modal-actions" class="u-mt-18">
+        <button class="btn btn-outline" id="decisionCancelBtn" type="button">Cancel</button>
+        <button class="btn btn-full-blue" id="decisionConfirmBtn" type="button">Confirm Decision</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Classic scripts (not type="module"): this app is opened directly as a
+       file:// document rather than through a local server, and browsers
+       block ES module imports under file:// via CORS. Shared/*.js files are
+       loaded first, in dependency order, so their declarations are already
+       global by the time process-claim.js runs. -->
+  <script src="shared/role-config.js"></script>
+  <script src="shared/role-state.js"></script>
+  <script src="shared/entries-store.js"></script>
+  <script src="shared/shared-components.js"></script>
+  <script src="shared/searchable-select.js"></script>
+  <script src="shared/process-sheet-loader.js"></script>
+  <script src="shared/placeholder-doc-template.js"></script>
+  <script src="process-claim.js"></script>
+</body>
+
+</html>
