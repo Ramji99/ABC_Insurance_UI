@@ -9,7 +9,7 @@
    here, etc.) is documented shared/reusable component library and stays in
    styles.css — see AGENTS.md § COMPONENT LIBRARY.
    ========================================================================== */
-
+ 
 /* --- Payment tabs — rounded pill switcher, same component as index.html's
    Scan Tag tabs (#scanTagTabs / .scan-tag-tab / .scan-tag-tab--active /
    .scan-tag-tab-badge). Payment gets its own .pay-tab* class family rather
